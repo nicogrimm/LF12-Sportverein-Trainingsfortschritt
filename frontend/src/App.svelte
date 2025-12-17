@@ -11,7 +11,7 @@
   }
 </script>
 
-<main>
+<main class="flex flex-col place-items-center min-h-screen m-w-screen m-0 scheme-light-dark bg-slate-900 text-white/85">
   <div>
     <a href="https://vite.dev" target="_blank" rel="noreferrer">
       <img src={viteLogo} class="logo" alt="Vite Logo" />
@@ -22,7 +22,7 @@
   </div>
   <h1>Vite + Svelte</h1>
 
-  <div class="card">
+  <div class="p-4">
     <Counter />
   </div>
 
@@ -34,7 +34,7 @@
     >, the official Svelte app framework powered by Vite!
   </p>
 
-  <p class="read-the-docs">Click on the Vite and Svelte logos to learn more</p>
+  <p class="text-slate-400">Click on the Vite and Svelte logos to learn more</p>
 
   <div>
     <button onclick={fetchTest}>Test</button>
@@ -56,8 +56,5 @@
   }
   .logo.svelte:hover {
     filter: drop-shadow(0 0 2em #ff3e00aa);
-  }
-  .read-the-docs {
-    color: #888;
   }
 </style>
