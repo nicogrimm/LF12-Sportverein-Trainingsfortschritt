@@ -1,61 +1,70 @@
 <script lang="ts">
-	import './app.css';
-	import viteLogo from "/vite.svg";
-	import Button from '$lib/components/ui/button/button.svelte';
+import "./app.css";
+import viteLogo from "/vite.svg";
+import Button from "$lib/components/ui/button/button.svelte";
+import Alertbox from "$lib/components/Alertbox.svelte";
+import { useAlerts } from "$lib/alerts";
 
-	let testMsg: string | undefined;
+let testMsg: string | undefined;
 
-	async function fetchTest() {
-		let resp = await fetch("http://localhost:8080/test");
+async function fetchTest() {
+  try {
+    let resp = await fetch("http://localhost:8080/test");
 
-		testMsg = await resp.text();
-	}
+    testMsg = await resp.text();
+  } catch (e) {
+    let { addAlert } = useAlerts();
+
+    addAlert({
+      level: "error",
+      title: "Server hat eine unerwartet Antwort gegeben",
+    });
+  }
+}
 </script>
 
 <main
-	class="flex flex-col place-items-center min-h-screen m-w-screen m-0 bg-white text-slate-900"
+  class="m-w-screen m-0 flex min-h-screen flex-col place-items-center bg-white text-slate-900"
 >
-	<div>
-		<a
-			href="https://vite.dev"
-			target="_blank"
-			rel="noreferrer"
-		>
-			<img src={viteLogo} class="logo" alt="Vite Logo" />
-		</a>
-	</div>
-	<h1>Vite + Svelte</h1>
-	<p>
-		Check out 
+  <div>
+    <a href="https://vite.dev" target="_blank" rel="noreferrer">
+      <img src={viteLogo} class="logo" alt="Vite Logo" />
+    </a>
+  </div>
+  <h1>Vite + Svelte</h1>
+  <p>
+    Check out
 
-		<a
-			href="https://github.com/sveltejs/kit#readme"
-			target="_blank"
-			rel="noreferrer"
-		>
-			SvelteKit
-		</a>
-		, the official Svelte app framework powered by Vite!
-	</p>
-	<p class="text-slate-600">Click on the Vite and Svelte logos to learn more</p>
-	<div>
-		<Button onclick={fetchTest}>Test</Button>
+    <a
+      href="https://github.com/sveltejs/kit#readme"
+      target="_blank"
+      rel="noreferrer"
+    >
+      SvelteKit
+    </a>
+    , the official Svelte app framework powered by Vite!
+  </p>
+  <p class="text-slate-600">Click on the Vite and Svelte logos to learn more</p>
+  <div class="gap-2">
+    <Alertbox />
 
-		{#if testMsg != undefined}
-			<p>{testMsg}</p>
-		{/if}
-	</div>
+    <Button onclick={fetchTest}>Test</Button>
+
+    {#if testMsg != undefined}
+      <p>{testMsg}</p>
+    {/if}
+  </div>
 </main>
 
 <style>
-	.logo {
-		height: 6em;
-		padding: 1.5em;
-		will-change: filter;
-		transition: filter 300ms;
-	}
+.logo {
+  height: 6em;
+  padding: 1.5em;
+  will-change: filter;
+  transition: filter 300ms;
+}
 
-	.logo:hover {
-		filter: drop-shadow(0 0 2em #646cffaa);
-	}
+.logo:hover {
+  filter: drop-shadow(0 0 2em #646cffaa);
+}
 </style>
