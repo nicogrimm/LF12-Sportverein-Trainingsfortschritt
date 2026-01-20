@@ -1,0 +1,28 @@
+databaseType = "PostgreSql"
+id = "dcb47125-a7f3-4032-9b82-352521367313"
+name = "LF12"
+
+[flyway]
+locations = [ "filesystem:migrations" ]
+mixed = true
+outOfOrder = true
+schemaModelLocation = "schema-model"
+validateMigrationNaming = true
+
+  [flyway.check]
+  majorTolerance = 0
+
+[flywayDesktop]
+developmentEnvironment = "development"
+schemaModel = "schema-model"
+shadowEnvironment = "shadow"
+
+[redgateCompare]
+filterFile = "filter.rgf"
+
+[redgateCompare.postgresql.options.ignores]
+ignoreNewlinesInTextObjects = "off"
+
+[environments.Sportverein]
+url = "jdbc:postgresql://localhost:5432/sportverein"
+schemas = [ "sportverein" ]

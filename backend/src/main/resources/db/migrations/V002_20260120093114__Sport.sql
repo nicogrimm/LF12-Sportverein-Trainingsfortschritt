@@ -1,0 +1,5 @@
+CREATE TABLE sport(
+    sport_id SERIAL PRIMARY KEY,
+    name VARCHAR(64) NOT NULL UNIQUE,
+    unit VARCHAR(16) NOT NULL
+);
