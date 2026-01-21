@@ -1,13 +1,20 @@
-package dto;
+package sportverein.dto;
 
-import lombok.*;
 import java.time.LocalDateTime;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
+@Data
 public class TrainingDto {
     private Long id;
     private Long athleteId;

@@ -1,16 +1,25 @@
-package controller;
-
-import dto.CreateTrainingDto;
-import dto.TrainingDto;
-import dto.UpdateTrainingDto;
-import service.TrainingService;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+package sportverein.controller;
 
 import java.util.List;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import sportverein.dto.CreateTrainingDto;
+import sportverein.dto.TrainingDto;
+import sportverein.dto.UpdateTrainingDto;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import sportverein.service.TrainingService;
 
 @Slf4j
 @RestController
@@ -27,7 +36,6 @@ public class TrainingController {
      */
     @GetMapping("/athlete/{athleteId}")
     public ResponseEntity<List<TrainingDto>> getTrainingsForAthlete(@PathVariable Long athleteId) {
-        log.info("GET request to /api/trainings/athlete/{}", athleteId);
         List<TrainingDto> trainings = trainingService.findByAthleteId(athleteId);
         return ResponseEntity.ok(trainings);
     }
@@ -40,7 +48,6 @@ public class TrainingController {
     public ResponseEntity<TrainingDto> getTrainingForAthlete(
             @PathVariable Long athleteId,
             @PathVariable Long trainingId) {
-        log.info("GET request to /api/trainings/athlete/{}/training/{}", athleteId, trainingId);
         return trainingService.findByAthleteIdAndTrainingId(athleteId, trainingId)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
@@ -54,12 +61,10 @@ public class TrainingController {
     public ResponseEntity<TrainingDto> createTrainingForAthlete(
             @PathVariable Long athleteId,
             @RequestBody CreateTrainingDto dto) {
-        log.info("POST request to /api/trainings/athlete/{} with body: {}", athleteId, dto);
         try {
             TrainingDto created = trainingService.createForAthlete(athleteId, dto);
             return ResponseEntity.status(HttpStatus.CREATED).body(created);
         } catch (IllegalArgumentException e) {
-            log.error("Error creating training: {}", e.getMessage());
             return ResponseEntity.badRequest().build();
         }
     }
@@ -73,16 +78,30 @@ public class TrainingController {
             @PathVariable Long athleteId,
             @PathVariable Long trainingId,
             @RequestBody UpdateTrainingDto dto) {
-        log.info("PUT request to /api/trainings/athlete/{}/training/{} with body: {}", 
-                athleteId, trainingId, dto);
         try {
             return trainingService.updateForAthlete(athleteId, trainingId, dto)
                     .map(ResponseEntity::ok)
                     .orElse(ResponseEntity.notFound().build());
         } catch (IllegalArgumentException e) {
-            log.error("Error updating training: {}", e.getMessage());
             return ResponseEntity.badRequest().build();
         }
+    }
+
+    /**
+     * DELETE /api/trainings/athlete/{athleteId}/training/{trainingId}
+     * Löscht ein Training eines Athleten
+     */
+    @DeleteMapping("/athlete/{athleteId}/training/{trainingId}")
+    public ResponseEntity<Void> deleteTrainingForAthlete(
+            @PathVariable Long athleteId,
+            @PathVariable Long trainingId) {
+        
+        return trainingService.findByAthleteIdAndTrainingId(athleteId, trainingId)
+                .map(training -> {
+                    trainingService.delete(trainingId);
+                    return ResponseEntity.noContent().<Void>build();
+                })
+                .orElse(ResponseEntity.notFound().build());
     }
     
     /**
@@ -91,7 +110,6 @@ public class TrainingController {
      */
     @GetMapping
     public ResponseEntity<List<TrainingDto>> getAllTrainings() {
-        log.info("GET request to /api/trainings");
         List<TrainingDto> trainings = trainingService.findAll();
         return ResponseEntity.ok(trainings);
     }

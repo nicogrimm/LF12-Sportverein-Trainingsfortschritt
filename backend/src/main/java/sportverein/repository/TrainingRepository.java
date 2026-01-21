@@ -1,10 +1,11 @@
-package com.github.nicogrimm.LF12_Sportverein_Trainingsfortschritt.backend.repository;
+package sportverein.repository;
 
-import com.github.nicogrimm.LF12_Sportverein_Trainingsfortschritt.backend.model.Training;
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
+import sportverein.model.Training;
 
 @Repository
 public interface TrainingRepository extends JpaRepository<Training, Long> {

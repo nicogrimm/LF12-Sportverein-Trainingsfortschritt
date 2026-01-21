@@ -1,18 +1,19 @@
-package service;
-
-import dto.CreateSportDto;
-import dto.SportDto;
-import dto.UpdateSportDto;
-import model.Sport;
-import repository.SportRepository;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+package sportverein.service;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import sportverein.dto.CreateSportDto;
+import sportverein.dto.SportDto;
+import sportverein.dto.UpdateSportDto;
+import sportverein.model.Sport;
+import sportverein.repository.SportRepository;
 
 @Slf4j
 @Service
@@ -25,7 +26,6 @@ public class SportService {
      * Gibt alle Sports zurück
      */
     public List<SportDto> findAll() {
-        log.info("Fetching all sports");
         return sportRepository.findAll().stream()
                 .map(this::convertToDto)
                 .collect(Collectors.toList());
@@ -35,7 +35,6 @@ public class SportService {
      * Gibt einen Sport anhand der ID zurück
      */
     public Optional<SportDto> findById(Long id) {
-        log.info("Fetching sport with id: {}", id);
         return sportRepository.findById(id)
                 .map(this::convertToDto);
     }
@@ -45,7 +44,6 @@ public class SportService {
      */
     @Transactional
     public SportDto create(CreateSportDto dto) {
-        log.info("Creating new sport: {}", dto);
         
         Sport sport = new Sport();
         sport.setName(dto.getName());
@@ -60,7 +58,6 @@ public class SportService {
      */
     @Transactional
     public Optional<SportDto> update(Long id, UpdateSportDto dto) {
-        log.info("Updating sport with id: {}", id);
         
         return sportRepository.findById(id)
                 .map(sport -> {
@@ -76,7 +73,6 @@ public class SportService {
      */
     @Transactional
     public boolean delete(Long id) {
-        log.info("Deleting sport with id: {}", id);
         
         if (sportRepository.existsById(id)) {
             sportRepository.deleteById(id);

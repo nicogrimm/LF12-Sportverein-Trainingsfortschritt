@@ -1,9 +1,18 @@
-package model;
-
-import jakarta.persistence.*;
-import lombok.*;
+package sportverein.model;
 
 import java.time.LocalDateTime;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
 @Entity
 @Table(name = "training")
@@ -30,13 +39,4 @@ public class Training {
     
     @Column(name = "metric", nullable = false)
     private String metric;
-    
-    // Optional: JPA-Beziehungen
-    @ManyToOne
-    @JoinColumn(name = "fk_athlete_id", insertable = false, updatable = false)
-    private Athlete athlete;
-    
-    @ManyToOne
-    @JoinColumn(name = "fk_sport_id", insertable = false, updatable = false)
-    private Sport sport;
 }

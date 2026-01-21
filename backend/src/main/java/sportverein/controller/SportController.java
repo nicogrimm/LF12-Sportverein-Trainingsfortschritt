@@ -1,16 +1,25 @@
-package controller;
-
-import dto.CreateSportDto;
-import dto.SportDto;
-import dto.UpdateSportDto;
-import service.SportService;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+package sportverein.controller;
 
 import java.util.List;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import sportverein.dto.CreateSportDto;
+import sportverein.dto.SportDto;
+import sportverein.dto.UpdateSportDto;
+import sportverein.service.SportService;
 
 @Slf4j
 @RestController
@@ -27,7 +36,6 @@ public class SportController {
      */
     @GetMapping
     public ResponseEntity<List<SportDto>> getSports() {
-        log.info("GET request to /api/sports");
         List<SportDto> sports = sportService.findAll();
         return ResponseEntity.ok(sports);
     }
@@ -38,7 +46,6 @@ public class SportController {
      */
     @GetMapping("/{id}")
     public ResponseEntity<SportDto> getSportById(@PathVariable Long id) {
-        log.info("GET request to /api/sports/{}", id);
         return sportService.findById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
@@ -50,7 +57,6 @@ public class SportController {
      */
     @PostMapping
     public ResponseEntity<SportDto> createSport(@RequestBody CreateSportDto dto) {
-        log.info("POST request to /api/sports with body: {}", dto);
         SportDto created = sportService.create(dto);
         return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
@@ -63,7 +69,6 @@ public class SportController {
     public ResponseEntity<SportDto> updateSport(
             @PathVariable Long id,
             @RequestBody UpdateSportDto dto) {
-        log.info("PUT request to /api/sports/{} with body: {}", id, dto);
         return sportService.update(id, dto)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
@@ -75,7 +80,6 @@ public class SportController {
      */
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteSport(@PathVariable Long id) {
-        log.info("DELETE request to /api/sports/{}", id);
         boolean deleted = sportService.delete(id);
         return deleted 
                 ? ResponseEntity.noContent().build() 

@@ -1,20 +1,21 @@
-package service;
-
-import dto.CreateTrainingDto;
-import dto.TrainingDto;
-import dto.UpdateTrainingDto;
-import model.Training;
-import repository.AthleteRepository;
-import repository.SportRepository;
-import repository.TrainingRepository;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+package sportverein.service;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import sportverein.dto.CreateTrainingDto;
+import sportverein.dto.TrainingDto;
+import sportverein.dto.UpdateTrainingDto;
+import sportverein.model.Training;
+import sportverein.repository.AthleteRepository;
+import sportverein.repository.SportRepository;
+import sportverein.repository.TrainingRepository;
 
 @Slf4j
 @Service
@@ -29,7 +30,6 @@ public class TrainingService {
      * Gibt alle Trainings zurück
      */
     public List<TrainingDto> findAll() {
-        log.info("Fetching all trainings");
         return trainingRepository.findAll().stream()
                 .map(this::convertToDto)
                 .collect(Collectors.toList());
@@ -39,7 +39,6 @@ public class TrainingService {
      * Gibt alle Trainings eines Athleten zurück
      */
     public List<TrainingDto> findByAthleteId(Long athleteId) {
-        log.info("Fetching trainings for athlete id: {}", athleteId);
         return trainingRepository.findByFkAthleteId(athleteId).stream()
                 .map(this::convertToDto)
                 .collect(Collectors.toList());
@@ -49,7 +48,6 @@ public class TrainingService {
      * Gibt ein Training anhand der ID zurück
      */
     public Optional<TrainingDto> findById(Long trainingId) {
-        log.info("Fetching training with id: {}", trainingId);
         return trainingRepository.findById(trainingId)
                 .map(this::convertToDto);
     }
@@ -58,7 +56,6 @@ public class TrainingService {
      * Gibt ein spezifisches Training eines Athleten zurück
      */
     public Optional<TrainingDto> findByAthleteIdAndTrainingId(Long athleteId, Long trainingId) {
-        log.info("Fetching training {} for athlete {}", trainingId, athleteId);
         return trainingRepository.findById(trainingId)
                 .filter(training -> training.getFkAthleteId().equals(athleteId))
                 .map(this::convertToDto);
@@ -69,7 +66,6 @@ public class TrainingService {
      */
     @Transactional
     public TrainingDto createForAthlete(Long athleteId, CreateTrainingDto dto) {
-        log.info("Creating new training for athlete {}: {}", athleteId, dto);
         
         // Validierung: Athlete muss existieren
         if (!athleteRepository.existsById(athleteId)) {
@@ -96,7 +92,6 @@ public class TrainingService {
      */
     @Transactional
     public Optional<TrainingDto> updateForAthlete(Long athleteId, Long trainingId, UpdateTrainingDto dto) {
-        log.info("Updating training {} for athlete {}", trainingId, athleteId);
         
         return trainingRepository.findById(trainingId)
                 .filter(training -> training.getFkAthleteId().equals(athleteId))
@@ -120,7 +115,6 @@ public class TrainingService {
      */
     @Transactional
     public boolean delete(Long trainingId) {
-        log.info("Deleting training with id: {}", trainingId);
         
         if (trainingRepository.existsById(trainingId)) {
             trainingRepository.deleteById(trainingId);
