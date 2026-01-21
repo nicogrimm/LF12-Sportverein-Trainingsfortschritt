@@ -1,61 +1,26 @@
 <script lang="ts">
-	import './app.css';
-	import viteLogo from "/vite.svg";
-	import Button from '$lib/components/ui/button/button.svelte';
+import Loading from "$lib/components/Loading.svelte";
+import { switchPage } from "$lib/navigation";
+import "./app.css";
 
-	let testMsg: string | undefined;
+const path = window.location.pathname;
 
-	async function fetchTest() {
-		let resp = await fetch("http://localhost:8080/test");
-
-		testMsg = await resp.text();
-	}
+async function loadPage() {
+  switch (path) {
+    case "/test1":
+      const test1 = await import("./pages/Default.svelte");
+      return test1.default;
+    case "/test2":
+      const test2 = await import("./pages/Test2.svelte");
+      return test2.default;
+    default:
+      switchPage("test1");
+  }
+}
 </script>
 
-<main
-	class="flex flex-col place-items-center min-h-screen m-w-screen m-0 bg-white text-slate-900"
->
-	<div>
-		<a
-			href="https://vite.dev"
-			target="_blank"
-			rel="noreferrer"
-		>
-			<img src={viteLogo} class="logo" alt="Vite Logo" />
-		</a>
-	</div>
-	<h1>Vite + Svelte</h1>
-	<p>
-		Check out 
-
-		<a
-			href="https://github.com/sveltejs/kit#readme"
-			target="_blank"
-			rel="noreferrer"
-		>
-			SvelteKit
-		</a>
-		, the official Svelte app framework powered by Vite!
-	</p>
-	<p class="text-slate-600">Click on the Vite and Svelte logos to learn more</p>
-	<div>
-		<Button onclick={fetchTest}>Test</Button>
-
-		{#if testMsg != undefined}
-			<p>{testMsg}</p>
-		{/if}
-	</div>
-</main>
-
-<style>
-	.logo {
-		height: 6em;
-		padding: 1.5em;
-		will-change: filter;
-		transition: filter 300ms;
-	}
-
-	.logo:hover {
-		filter: drop-shadow(0 0 2em #646cffaa);
-	}
-</style>
+{#await loadPage()}
+  <Loading />
+{:then page}
+  <svelte:component this={page} />
+{/await}
