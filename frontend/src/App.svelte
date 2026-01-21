@@ -1,5 +1,6 @@
 <script lang="ts">
-    import { switchPage } from "$lib/navigation";
+import Loading from "$lib/components/Loading.svelte";
+import { switchPage } from "$lib/navigation";
 import "./app.css";
 
 const path = window.location.pathname;
@@ -18,6 +19,8 @@ async function loadPage() {
 }
 </script>
 
-{#await loadPage() then page}
+{#await loadPage()}
+  <Loading />
+{:then page}
   <svelte:component this={page} />
 {/await}
