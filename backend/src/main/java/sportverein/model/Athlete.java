@@ -23,12 +23,12 @@ public class Athlete {
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "pk_athlete_id")
-    private Long pkAthleteId;
+    @Column(name = "athlete_id")
+    private Long athleteId;
     
-    @Column(name = "firstname", nullable = false)
+    @Column(name = "firstname", nullable = false, length = 64)
     private String firstname;
     
-    @Column(name = "name", nullable = false)
+    @Column(name = "name", nullable = false, length = 64)
     private String name;
 }

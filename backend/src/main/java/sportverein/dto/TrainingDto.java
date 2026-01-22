@@ -1,6 +1,6 @@
 package sportverein.dto;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -19,6 +19,6 @@ public class TrainingDto {
     private Long id;
     private Long athleteId;
     private Long sportId;
-    private LocalDateTime date;
-    private String metric;
+    private OffsetDateTime date;
+    private Float metric;
 }

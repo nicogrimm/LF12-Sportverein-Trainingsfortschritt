@@ -7,11 +7,11 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import sportverein.dto.AthleteDto;
 import sportverein.dto.CreateAthleteDto;
 import sportverein.dto.UpdateAthleteDto;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import sportverein.model.Athlete;
 import sportverein.repository.AthleteRepository;
 
@@ -87,7 +87,7 @@ public class AthleteService {
      */
     private AthleteDto convertToDto(Athlete athlete) {
         AthleteDto dto = new AthleteDto();
-        dto.setId(athlete.getPkAthleteId());
+        dto.setId(athlete.getAthleteId());
         dto.setFirstname(athlete.getFirstname());
         dto.setName(athlete.getName());
         return dto;

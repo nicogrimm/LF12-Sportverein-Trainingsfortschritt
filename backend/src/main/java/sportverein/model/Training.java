@@ -1,6 +1,6 @@
 package sportverein.model;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -25,18 +25,18 @@ public class Training {
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "pk_training_id")
-    private Long pkTrainingId;
+    @Column(name = "training_id")
+    private Long trainingId;
     
-    @Column(name = "fk_athlete_id", nullable = false)
-    private Long fkAthleteId;
+    @Column(name = "athlete_id", nullable = false)
+    private Long athleteId;
     
-    @Column(name = "fk_sport_id", nullable = false)
-    private Long fkSportId;
+    @Column(name = "sport_id", nullable = false)
+    private Long sportId;
     
     @Column(name = "date", nullable = false)
-    private LocalDateTime date;
+    private OffsetDateTime date;
     
     @Column(name = "metric", nullable = false)
-    private String metric;
+    private Float metric;
 }

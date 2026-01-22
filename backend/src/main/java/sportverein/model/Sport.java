@@ -23,12 +23,12 @@ public class Sport {
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "pk_sport_id")
-    private Long pkSportId;
+    @Column(name = "sport_id")
+    private Long sportId;
     
-    @Column(name = "name", nullable = false)
+    @Column(name = "name", nullable = false, unique = true, length = 64)
     private String name;
     
-    @Column(name = "unit", nullable = false)
+    @Column(name = "unit", nullable = false, length = 16)
     private String unit;
 }

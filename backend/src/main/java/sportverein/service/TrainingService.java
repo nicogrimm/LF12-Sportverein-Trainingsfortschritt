@@ -39,7 +39,7 @@ public class TrainingService {
      * Gibt alle Trainings eines Athleten zurück
      */
     public List<TrainingDto> findByAthleteId(Long athleteId) {
-        return trainingRepository.findByFkAthleteId(athleteId).stream()
+        return trainingRepository.findByAthleteId(athleteId).stream()
                 .map(this::convertToDto)
                 .collect(Collectors.toList());
     }
@@ -57,7 +57,7 @@ public class TrainingService {
      */
     public Optional<TrainingDto> findByAthleteIdAndTrainingId(Long athleteId, Long trainingId) {
         return trainingRepository.findById(trainingId)
-                .filter(training -> training.getFkAthleteId().equals(athleteId))
+                .filter(training -> training.getAthleteId().equals(athleteId))
                 .map(this::convertToDto);
     }
     
@@ -78,8 +78,8 @@ public class TrainingService {
         }
         
         Training training = new Training();
-        training.setFkAthleteId(athleteId);
-        training.setFkSportId(dto.getSportId());
+        training.setAthleteId(athleteId);
+        training.setSportId(dto.getSportId());
         training.setDate(dto.getDate());
         training.setMetric(dto.getMetric());
         
@@ -94,14 +94,14 @@ public class TrainingService {
     public Optional<TrainingDto> updateForAthlete(Long athleteId, Long trainingId, UpdateTrainingDto dto) {
         
         return trainingRepository.findById(trainingId)
-                .filter(training -> training.getFkAthleteId().equals(athleteId))
+                .filter(training -> training.getAthleteId().equals(athleteId))
                 .map(training -> {
                     // Validierung: Sport muss existieren
                     if (!sportRepository.existsById(dto.getSportId())) {
                         throw new IllegalArgumentException("Sport with id " + dto.getSportId() + " not found");
                     }
                     
-                    training.setFkSportId(dto.getSportId());
+                    training.setSportId(dto.getSportId());
                     training.setDate(dto.getDate());
                     training.setMetric(dto.getMetric());
                     
@@ -128,9 +128,9 @@ public class TrainingService {
      */
     private TrainingDto convertToDto(Training training) {
         TrainingDto dto = new TrainingDto();
-        dto.setId(training.getPkTrainingId());
-        dto.setAthleteId(training.getFkAthleteId());
-        dto.setSportId(training.getFkSportId());
+        dto.setId(training.getTrainingId());
+        dto.setAthleteId(training.getAthleteId());
+        dto.setSportId(training.getSportId());
         dto.setDate(training.getDate());
         dto.setMetric(training.getMetric());
         return dto;

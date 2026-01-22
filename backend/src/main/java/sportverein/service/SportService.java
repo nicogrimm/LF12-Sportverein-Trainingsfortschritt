@@ -86,7 +86,7 @@ public class SportService {
      */
     private SportDto convertToDto(Sport sport) {
         SportDto dto = new SportDto();
-        dto.setId(sport.getPkSportId());
+        dto.setId(sport.getSportId());
         dto.setName(sport.getName());
         dto.setUnit(sport.getUnit());
         return dto;

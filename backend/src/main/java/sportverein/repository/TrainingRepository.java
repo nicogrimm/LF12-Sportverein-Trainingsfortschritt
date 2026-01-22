@@ -17,20 +17,18 @@ public interface TrainingRepository extends JpaRepository<Training, Long> {
     // - deleteById(Long id) -> void
     // - existsById(Long id) -> boolean
     
-    // Custom Query Methods basierend auf Ihrem Diagramm:
-    
-    /**
+    /** 
      * Findet alle Trainings eines bestimmten Athleten
      */
-    List<Training> findByFkAthleteId(Long athleteId);
+    List<Training> findByAthleteId(Long athleteId);
     
     /**
      * Findet alle Trainings eines bestimmten Sports
      */
-    List<Training> findByFkSportId(Long sportId);
+    List<Training> findBySportId(Long sportId);
     
     /**
      * Findet Trainings eines Athleten für einen bestimmten Sport
      */
-    List<Training> findByFkAthleteIdAndFkSportId(Long athleteId, Long sportId);
+    List<Training> findByAthleteIdAndSportId(Long athleteId, Long sportId);
 }
