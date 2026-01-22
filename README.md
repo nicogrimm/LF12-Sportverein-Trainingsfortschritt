@@ -75,10 +75,275 @@ DELETE http://localhost:8080/api/test-data/clear
 
 ## API-Endpoints
 
+### Athleten
+
+#### Alle Athleten abrufen
+```http
+GET /api/athletes
+```
+
+**Antwort:** `200 OK`
+```json
+[
+  {
+    "athleteId": 1,
+    "firstname": "Max",
+    "name": "Mustermann"
+  }
+]
+```
+
+#### Einen Athleten abrufen
+```http
+GET /api/athletes/{id}
+```
+
+**Antwort:** `200 OK` oder `404 Not Found`
+```json
+{
+  "athleteId": 1,
+  "firstname": "Max",
+  "name": "Mustermann"
+}
+```
+
+#### Athleten erstellen
+```http
+POST /api/athletes
+Content-Type: application/json
+
+{
+  "firstname": "Max",
+  "name": "Mustermann"
+}
+```
+
+**Antwort:** `201 Created`
+```json
+{
+  "athleteId": 1,
+  "firstname": "Max",
+  "name": "Mustermann"
+}
+```
+
+#### Athleten aktualisieren
+```http
+PUT /api/athletes/{id}
+Content-Type: application/json
+
+{
+  "firstname": "Maximilian",
+  "name": "Mustermann"
+}
+```
+
+**Antwort:** `200 OK` oder `404 Not Found`
+
+#### Athleten löschen
+```http
+DELETE /api/athletes/{id}
+```
+
+**Antwort:** `204 No Content` oder `404 Not Found`
+
+---
+
+### Sportarten
+
+#### Alle Sportarten abrufen
+```http
+GET /api/sports
+```
+
+**Antwort:** `200 OK`
+```json
+[
+  {
+    "sportId": 1,
+    "name": "Laufen",
+    "unit": "km"
+  }
+]
+```
+
+#### Eine Sportart abrufen
+```http
+GET /api/sports/{id}
+```
+
+**Antwort:** `200 OK` oder `404 Not Found`
+```json
+{
+  "sportId": 1,
+  "name": "Laufen",
+  "unit": "km"
+}
+```
+
+#### Sportart erstellen
+```http
+POST /api/sports
+Content-Type: application/json
+
+{
+  "name": "Laufen",
+  "unit": "km"
+}
+```
+
+**Antwort:** `201 Created`
+```json
+{
+  "sportId": 1,
+  "name": "Laufen",
+  "unit": "km"
+}
+```
+
+#### Sportart aktualisieren
+```http
+PUT /api/sports/{id}
+Content-Type: application/json
+
+{
+  "name": "Joggen",
+  "unit": "km"
+}
+```
+
+**Antwort:** `200 OK` oder `404 Not Found`
+
+#### Sportart löschen
+```http
+DELETE /api/sports/{id}
+```
+
+**Antwort:** `204 No Content` oder `404 Not Found`
+
+---
+
+### Trainings
+
+#### Alle Trainings abrufen
+```http
+GET /api/trainings
+```
+
+**Antwort:** `200 OK`
+```json
+[
+  {
+    "trainingId": 1,
+    "athleteId": 1,
+    "sportId": 1,
+    "date": "2026-01-15T08:00:00+01:00",
+    "metric": 5.5
+  }
+]
+```
+
+#### Alle Trainings eines Athleten abrufen
+```http
+GET /api/trainings/athlete/{athleteId}
+```
+
+**Antwort:** `200 OK`
+```json
+[
+  {
+    "trainingId": 1,
+    "athleteId": 1,
+    "sportId": 1,
+    "date": "2026-01-15T08:00:00+01:00",
+    "metric": 5.5
+  }
+]
+```
+
+#### Ein bestimmtes Training eines Athleten abrufen
+```http
+GET /api/trainings/athlete/{athleteId}/training/{trainingId}
+```
+
+**Antwort:** `200 OK` oder `404 Not Found`
+```json
+{
+  "trainingId": 1,
+  "athleteId": 1,
+  "sportId": 1,
+  "date": "2026-01-15T08:00:00+01:00",
+  "metric": 5.5
+}
+```
+
+#### Training für einen Athleten erstellen
+```http
+POST /api/trainings/athlete/{athleteId}
+Content-Type: application/json
+
+{
+  "sportId": 1,
+  "date": "2026-01-22T10:00:00+01:00",
+  "metric": 7.5
+}
+```
+
+**Antwort:** `201 Created` oder `400 Bad Request`
+```json
+{
+  "trainingId": 7,
+  "athleteId": 1,
+  "sportId": 1,
+  "date": "2026-01-22T10:00:00+01:00",
+  "metric": 7.5
+}
+```
+
+#### Training eines Athleten aktualisieren
+```http
+PUT /api/trainings/athlete/{athleteId}/training/{trainingId}
+Content-Type: application/json
+
+{
+  "sportId": 1,
+  "date": "2026-01-22T11:00:00+01:00",
+  "metric": 8.0
+}
+```
+
+**Antwort:** `200 OK`, `404 Not Found` oder `400 Bad Request`
+
+#### Training eines Athleten löschen
+```http
+DELETE /api/trainings/athlete/{athleteId}/training/{trainingId}
+```
+
+**Antwort:** `204 No Content` oder `404 Not Found`
+
+---
+
 ### Testdaten (nur im dev-Profil verfügbar)
 
-- `POST /api/test-data/load` - Testdaten in die Datenbank laden
-- `DELETE /api/test-data/clear` - Alle Daten aus der Datenbank löschen
+#### Testdaten laden
+```http
+POST /api/test-data/load
+```
+
+**Antwort:** `200 OK`
+```json
+"Test data loaded successfully!"
+```
+
+#### Alle Daten löschen
+```http
+DELETE /api/test-data/clear
+```
+
+**Antwort:** `200 OK`
+```json
+"All data cleared successfully!"
+```
 
 ## Technologie-Stack
 
