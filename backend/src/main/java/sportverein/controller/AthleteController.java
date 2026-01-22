@@ -45,7 +45,7 @@ public class AthleteController {
      * Gibt einen bestimmten Athleten zurück
      */
     @GetMapping("/{id}")
-    public ResponseEntity<AthleteDto> getAthleteById(@PathVariable Long id) {
+    public ResponseEntity<AthleteDto> getAthleteById(@PathVariable int id) {
         return athleteService.findById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
@@ -67,7 +67,7 @@ public class AthleteController {
      */
     @PutMapping("/{id}")
     public ResponseEntity<AthleteDto> updateAthlete(
-            @PathVariable Long id,
+            @PathVariable int id,
             @RequestBody UpdateAthleteDto dto) {
         return athleteService.update(id, dto)
                 .map(ResponseEntity::ok)
@@ -79,7 +79,7 @@ public class AthleteController {
      * Löscht einen Athleten
      */
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteAthlete(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteAthlete(@PathVariable int id) {
         boolean deleted = athleteService.delete(id);
         return deleted 
                 ? ResponseEntity.noContent().build() 

@@ -45,7 +45,7 @@ public class SportController {
      * Gibt einen bestimmten Sport zurück
      */
     @GetMapping("/{id}")
-    public ResponseEntity<SportDto> getSportById(@PathVariable Long id) {
+    public ResponseEntity<SportDto> getSportById(@PathVariable int id) {
         return sportService.findById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
@@ -67,7 +67,7 @@ public class SportController {
      */
     @PutMapping("/{id}")
     public ResponseEntity<SportDto> updateSport(
-            @PathVariable Long id,
+            @PathVariable int id,
             @RequestBody UpdateSportDto dto) {
         return sportService.update(id, dto)
                 .map(ResponseEntity::ok)
@@ -79,7 +79,7 @@ public class SportController {
      * Löscht einen Sport
      */
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteSport(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteSport(@PathVariable int id) {
         boolean deleted = sportService.delete(id);
         return deleted 
                 ? ResponseEntity.noContent().build() 

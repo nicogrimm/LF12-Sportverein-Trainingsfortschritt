@@ -14,7 +14,7 @@ import lombok.ToString;
 @ToString
 @Data
 public class AthleteDto {
-    private Long id;
+    private int id;
     private String firstname;
     private String name;
 }

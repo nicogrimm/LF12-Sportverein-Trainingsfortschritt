@@ -34,7 +34,7 @@ public class SportService {
     /**
      * Gibt einen Sport anhand der ID zurück
      */
-    public Optional<SportDto> findById(Long id) {
+    public Optional<SportDto> findById(int id) {
         return sportRepository.findById(id)
                 .map(this::convertToDto);
     }
@@ -57,7 +57,7 @@ public class SportService {
      * Aktualisiert einen bestehenden Sport
      */
     @Transactional
-    public Optional<SportDto> update(Long id, UpdateSportDto dto) {
+    public Optional<SportDto> update(int id, UpdateSportDto dto) {
         
         return sportRepository.findById(id)
                 .map(sport -> {
@@ -72,7 +72,7 @@ public class SportService {
      * Löscht einen Sport
      */
     @Transactional
-    public boolean delete(Long id) {
+    public boolean delete(int id) {
         
         if (sportRepository.existsById(id)) {
             sportRepository.deleteById(id);

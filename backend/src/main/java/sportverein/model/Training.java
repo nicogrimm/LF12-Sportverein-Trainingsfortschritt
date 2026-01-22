@@ -26,13 +26,13 @@ public class Training {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "training_id")
-    private Long trainingId;
+    private int trainingId;
     
     @Column(name = "athlete_id", nullable = false)
-    private Long athleteId;
+    private int athleteId;
     
     @Column(name = "sport_id", nullable = false)
-    private Long sportId;
+    private int sportId;
     
     @Column(name = "date", nullable = false)
     private OffsetDateTime date;

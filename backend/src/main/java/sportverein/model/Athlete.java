@@ -24,7 +24,7 @@ public class Athlete {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "athlete_id")
-    private Long athleteId;
+    private int athleteId;
     
     @Column(name = "firstname", nullable = false, length = 64)
     private String firstname;

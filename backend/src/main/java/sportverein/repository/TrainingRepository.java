@@ -8,27 +8,27 @@ import org.springframework.stereotype.Repository;
 import sportverein.model.Training;
 
 @Repository
-public interface TrainingRepository extends JpaRepository<Training, Long> {
+public interface TrainingRepository extends JpaRepository<Training, Integer> {
     
     // Spring Data JPA generiert automatisch Implementierungen für:
     // - findAll() -> List<Training>
-    // - findById(Long id) -> Optional<Training>
+    // - findById(Integer id) -> Optional<Training>
     // - save(Training training) -> Training
-    // - deleteById(Long id) -> void
-    // - existsById(Long id) -> boolean
+    // - deleteById(Integer id) -> void
+    // - existsById(Integer id) -> boolean
     
     /** 
      * Findet alle Trainings eines bestimmten Athleten
      */
-    List<Training> findByAthleteId(Long athleteId);
+    List<Training> findByAthleteId(Integer athleteId);
     
     /**
      * Findet alle Trainings eines bestimmten Sports
      */
-    List<Training> findBySportId(Long sportId);
+    List<Training> findBySportId(Integer sportId);
     
     /**
      * Findet Trainings eines Athleten für einen bestimmten Sport
      */
-    List<Training> findByAthleteIdAndSportId(Long athleteId, Long sportId);
+    List<Training> findByAthleteIdAndSportId(Integer athleteId, Integer sportId);
 }

@@ -38,7 +38,7 @@ public class TrainingService {
     /**
      * Gibt alle Trainings eines Athleten zurück
      */
-    public List<TrainingDto> findByAthleteId(Long athleteId) {
+    public List<TrainingDto> findByAthleteId(int athleteId) {
         return trainingRepository.findByAthleteId(athleteId).stream()
                 .map(this::convertToDto)
                 .collect(Collectors.toList());
@@ -47,7 +47,7 @@ public class TrainingService {
     /**
      * Gibt ein Training anhand der ID zurück
      */
-    public Optional<TrainingDto> findById(Long trainingId) {
+    public Optional<TrainingDto> findById(int trainingId) {
         return trainingRepository.findById(trainingId)
                 .map(this::convertToDto);
     }
@@ -55,9 +55,9 @@ public class TrainingService {
     /**
      * Gibt ein spezifisches Training eines Athleten zurück
      */
-    public Optional<TrainingDto> findByAthleteIdAndTrainingId(Long athleteId, Long trainingId) {
+    public Optional<TrainingDto> findByAthleteIdAndTrainingId(int athleteId, int trainingId) {
         return trainingRepository.findById(trainingId)
-                .filter(training -> training.getAthleteId().equals(athleteId))
+                .filter(training -> training.getAthleteId() == athleteId)
                 .map(this::convertToDto);
     }
     
@@ -65,7 +65,7 @@ public class TrainingService {
      * Erstellt ein neues Training für einen Athleten
      */
     @Transactional
-    public TrainingDto createForAthlete(Long athleteId, CreateTrainingDto dto) {
+    public TrainingDto createForAthlete(int athleteId, CreateTrainingDto dto) {
         
         // Validierung: Athlete muss existieren
         if (!athleteRepository.existsById(athleteId)) {
@@ -91,10 +91,10 @@ public class TrainingService {
      * Aktualisiert ein Training eines Athleten
      */
     @Transactional
-    public Optional<TrainingDto> updateForAthlete(Long athleteId, Long trainingId, UpdateTrainingDto dto) {
+    public Optional<TrainingDto> updateForAthlete(int athleteId, int trainingId, UpdateTrainingDto dto) {
         
         return trainingRepository.findById(trainingId)
-                .filter(training -> training.getAthleteId().equals(athleteId))
+                .filter(training -> training.getAthleteId() == athleteId)
                 .map(training -> {
                     // Validierung: Sport muss existieren
                     if (!sportRepository.existsById(dto.getSportId())) {
@@ -114,7 +114,7 @@ public class TrainingService {
      * Löscht ein Training
      */
     @Transactional
-    public boolean delete(Long trainingId) {
+    public boolean delete(int trainingId) {
         
         if (trainingRepository.existsById(trainingId)) {
             trainingRepository.deleteById(trainingId);

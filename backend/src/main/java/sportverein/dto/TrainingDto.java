@@ -16,9 +16,9 @@ import lombok.ToString;
 @ToString
 @Data
 public class TrainingDto {
-    private Long id;
-    private Long athleteId;
-    private Long sportId;
+    private int id;
+    private int athleteId;
+    private int sportId;
     private OffsetDateTime date;
     private Float metric;
 }

@@ -34,7 +34,7 @@ public class AthleteService {
     /**
      * Gibt einen Athleten anhand der ID zurück
      */
-    public Optional<AthleteDto> findById(Long id) {
+    public Optional<AthleteDto> findById(int id) {
         return athleteRepository.findById(id)
                 .map(athlete -> convertToDto((Athlete) athlete));
     }
@@ -57,7 +57,7 @@ public class AthleteService {
      * Aktualisiert einen bestehenden Athleten
      */
     @Transactional
-    public Optional<AthleteDto> update(Long id, UpdateAthleteDto dto) {
+    public Optional<AthleteDto> update(int id, UpdateAthleteDto dto) {
         
         return athleteRepository.findById(id)
                 .map(athlete -> {
@@ -73,7 +73,7 @@ public class AthleteService {
      * Löscht einen Athleten (nur wenn keine Trainings vorhanden)
      */
     @Transactional
-    public boolean delete(Long id) {
+    public boolean delete(int id) {
         
         if (athleteRepository.existsById(id)) {
             athleteRepository.deleteById(id);

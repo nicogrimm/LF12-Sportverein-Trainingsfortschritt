@@ -8,14 +8,14 @@ import org.springframework.stereotype.Repository;
 import sportverein.model.Sport;
 
 @Repository
-public interface SportRepository extends JpaRepository<Sport, Long> {
+public interface SportRepository extends JpaRepository<Sport, Integer> {
     
     // Spring Data JPA generiert automatisch Implementierungen für:
     // - findAll() -> List<Sport>
-    // - findById(Long id) -> Optional<Sport>
+    // - findById(Integer id) -> Optional<Sport>
     // - save(Sport sport) -> Sport
-    // - deleteById(Long id) -> void
-    // - existsById(Long id) -> boolean
+    // - deleteById(Integer id) -> void
+    // - existsById(Integer id) -> boolean
     
     Optional<Sport> findByName(String name);
 }

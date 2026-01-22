@@ -14,11 +14,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import sportverein.dto.CreateTrainingDto;
 import sportverein.dto.TrainingDto;
 import sportverein.dto.UpdateTrainingDto;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import sportverein.service.TrainingService;
 
 @Slf4j
@@ -35,7 +35,7 @@ public class TrainingController {
      * Gibt alle Trainings eines Athleten zurück
      */
     @GetMapping("/athlete/{athleteId}")
-    public ResponseEntity<List<TrainingDto>> getTrainingsForAthlete(@PathVariable Long athleteId) {
+    public ResponseEntity<List<TrainingDto>> getTrainingsForAthlete(@PathVariable int athleteId) {
         List<TrainingDto> trainings = trainingService.findByAthleteId(athleteId);
         return ResponseEntity.ok(trainings);
     }
@@ -46,8 +46,8 @@ public class TrainingController {
      */
     @GetMapping("/athlete/{athleteId}/training/{trainingId}")
     public ResponseEntity<TrainingDto> getTrainingForAthlete(
-            @PathVariable Long athleteId,
-            @PathVariable Long trainingId) {
+            @PathVariable int athleteId,
+            @PathVariable int trainingId) {
         return trainingService.findByAthleteIdAndTrainingId(athleteId, trainingId)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
@@ -59,7 +59,7 @@ public class TrainingController {
      */
     @PostMapping("/athlete/{athleteId}")
     public ResponseEntity<TrainingDto> createTrainingForAthlete(
-            @PathVariable Long athleteId,
+            @PathVariable int athleteId,
             @RequestBody CreateTrainingDto dto) {
         try {
             TrainingDto created = trainingService.createForAthlete(athleteId, dto);
@@ -75,8 +75,8 @@ public class TrainingController {
      */
     @PutMapping("/athlete/{athleteId}/training/{trainingId}")
     public ResponseEntity<TrainingDto> updateTrainingForAthlete(
-            @PathVariable Long athleteId,
-            @PathVariable Long trainingId,
+            @PathVariable int athleteId,
+            @PathVariable int trainingId,
             @RequestBody UpdateTrainingDto dto) {
         try {
             return trainingService.updateForAthlete(athleteId, trainingId, dto)
@@ -93,8 +93,8 @@ public class TrainingController {
      */
     @DeleteMapping("/athlete/{athleteId}/training/{trainingId}")
     public ResponseEntity<Void> deleteTrainingForAthlete(
-            @PathVariable Long athleteId,
-            @PathVariable Long trainingId) {
+            @PathVariable int athleteId,
+            @PathVariable int trainingId) {
         
         return trainingService.findByAthleteIdAndTrainingId(athleteId, trainingId)
                 .map(training -> {
