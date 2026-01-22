@@ -1,5 +1,5 @@
 <script lang="ts">
-import { useAlerts } from "$lib/alerts";
+import { addAlert } from "$lib/alerts";
 import Alertbox from "$lib/components/Alertbox.svelte";
 import { Button } from "$lib/components/ui/button";
 
@@ -11,8 +11,6 @@ async function fetchTest() {
 
     testMsg = await resp.text();
   } catch (e) {
-    let { addAlert } = useAlerts();
-
     addAlert({
       level: "error",
       title: "Server hat eine unerwartet Antwort gegeben",

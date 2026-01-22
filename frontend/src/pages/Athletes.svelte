@@ -25,29 +25,27 @@ import {
   renderSnippet,
 } from "$lib/components/ui/data-table/index.js";
 import DataTableButton from "$lib/components/DataTableButton.svelte";
+import DataTableActions from "$lib/components/DataTableActions.svelte";
 import { athleteService, type Athlete } from "$lib/service/athleteService";
 import Loading from "$lib/components/Loading.svelte";
 import Alertbox from "$lib/components/Alertbox.svelte";
-import { useAlerts } from "$lib/alerts";
+import { addAlert, clearAlerts } from "$lib/alerts";
 import * as Dialog from "$lib/components/ui/dialog";
 import { Label } from "$lib/components/ui/label";
-
-let { addAlert, clearAlerts } = useAlerts();
 
 let data: Athlete[] = [];
 let promise = $state(loadData());
 
 async function loadData() {
   try {
-    const athletes = await athleteService.getAthletes();
-    return (data = athletes);
+    return await athleteService.getAthletes().then((list) => (data = list));
   } catch (err) {
     console.error(err);
     addAlert({ level: "error", title: "Fehler beim Holen der Daten" });
   }
 }
 
-async function refreshList() {
+async function refreshData() {
   promise = loadData();
 }
 
@@ -80,7 +78,7 @@ async function submitAdd(event: SubmitEvent) {
 
   addAthleteDialogOpened = false;
 
-  refreshList();
+  refreshData();
 }
 
 const columns: ColumnDef<Athlete>[] = [
@@ -148,15 +146,15 @@ const columns: ColumnDef<Athlete>[] = [
       });
     },
   },
-  // {
-  //  id: "actions",
-  //  enableHiding: false,
-  //  cell: ({ row }) =>
-  //   renderComponent(DataTableActions, { id: row.original.id })
-  // }
+  {
+    id: "actions",
+    enableHiding: false,
+    cell: ({ row }) =>
+      renderComponent(DataTableActions, { athlete: row.original }),
+  },
 ];
 
-let pagination = $state<PaginationState>({ pageIndex: 0, pageSize: 10 });
+// let pagination = $state<PaginationState>({ pageIndex: 0, pageSize: 10 });
 let sorting = $state<SortingState>([]);
 let columnFilters = $state<ColumnFiltersState>([]);
 let rowSelection = $state<RowSelectionState>({});
@@ -168,9 +166,9 @@ const table = createSvelteTable({
   },
   columns,
   state: {
-    get pagination() {
-      return pagination;
-    },
+    // get pagination() {
+    //   return pagination;
+    // },
     get sorting() {
       return sorting;
     },
@@ -185,16 +183,16 @@ const table = createSvelteTable({
     },
   },
   getCoreRowModel: getCoreRowModel(),
-  getPaginationRowModel: getPaginationRowModel(),
+  // getPaginationRowModel: getPaginationRowModel(),
   getSortedRowModel: getSortedRowModel(),
   getFilteredRowModel: getFilteredRowModel(),
-  onPaginationChange: (updater) => {
-    if (typeof updater === "function") {
-      pagination = updater(pagination);
-    } else {
-      pagination = updater;
-    }
-  },
+  // onPaginationChange: (updater) => {
+  //   if (typeof updater === "function") {
+  //     pagination = updater(pagination);
+  //   } else {
+  //     pagination = updater;
+  //   }
+  // },
   onSortingChange: (updater) => {
     if (typeof updater === "function") {
       sorting = updater(sorting);
@@ -286,7 +284,7 @@ const table = createSvelteTable({
             </form>
           </Dialog.Content>
         </Dialog.Root>
-        <Button onclick={refreshList}><RefreshCwIcon /></Button>
+        <Button onclick={refreshData}><RefreshCwIcon /></Button>
         <DropdownMenu.Root>
           <DropdownMenu.Trigger>
             {#snippet child({ props })}
@@ -349,30 +347,30 @@ const table = createSvelteTable({
           </Table.Body>
         </Table.Root>
       </div>
-      <div class="flex items-center justify-end space-x-2 pt-4">
-        <div class="flex-1 text-sm text-muted-foreground">
-          {table.getFilteredSelectedRowModel().rows.length} von
-          {table.getFilteredRowModel().rows.length} Zeile(n) ausgewählt.
-        </div>
-        <div class="space-x-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onclick={() => table.previousPage()}
-            disabled={!table.getCanPreviousPage()}
-          >
-            Zurück
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onclick={() => table.nextPage()}
-            disabled={!table.getCanNextPage()}
-          >
-            Weiter
-          </Button>
-        </div>
-      </div>
+      <!-- <div class="flex items-center justify-end space-x-2 pt-4"> -->
+        <!-- <div class="flex-1 text-sm text-muted-foreground"> -->
+        <!--   {table.getFilteredSelectedRowModel().rows.length} von -->
+        <!--   {table.getFilteredRowModel().rows.length} Zeile(n) ausgewählt. -->
+        <!-- </div> -->
+        <!-- <div class="space-x-2"> -->
+        <!--   <Button -->
+        <!--     variant="outline" -->
+        <!--     size="sm" -->
+        <!--     onclick={() => table.previousPage()} -->
+        <!--     disabled={!table.getCanPreviousPage()} -->
+        <!--   > -->
+        <!--     Zurück -->
+        <!--   </Button> -->
+        <!--   <Button -->
+        <!--     variant="outline" -->
+        <!--     size="sm" -->
+        <!--     onclick={() => table.nextPage()} -->
+        <!--     disabled={!table.getCanNextPage()} -->
+        <!--   > -->
+        <!--     Weiter -->
+        <!--   </Button> -->
+        <!-- </div> -->
+      <!-- </div> -->
     </div>
   {/await}
 </main>

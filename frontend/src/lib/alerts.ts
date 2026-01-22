@@ -1,4 +1,4 @@
-import { writable } from "svelte/store";
+import { get, writable } from "svelte/store";
 
 type Alert = {
   level: "info" | "error";
@@ -6,19 +6,19 @@ type Alert = {
   description?: string;
 };
 
-const alerts = writable<Alert[]>([]);
+export const alerts = writable<Alert[]>([]);
 
-export const useAlerts = () => ({
-  alerts,
-  addAlert(alertInfo: Alert) {
-    console.info("adding alert", alertInfo);
-    alerts.update((list) => {
-      list.push(alertInfo);
-      return list;
-    });
-  },
-  clearAlerts() {
+export function addAlert(alertInfo: Alert) {
+  console.info("adding alert", alertInfo);
+  alerts.update((list) => {
+    list.push(alertInfo);
+    return list;
+  });
+}
+
+export function clearAlerts() {
+  if (get(alerts).length != 0) {
     console.info("clearing alerts");
-    alerts.set([]);
-  },
-});
+  }
+  alerts.set([]);
+}

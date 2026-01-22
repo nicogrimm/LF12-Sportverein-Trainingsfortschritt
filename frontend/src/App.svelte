@@ -1,26 +1,34 @@
 <script lang="ts">
 import Loading from "$lib/components/Loading.svelte";
-import { switchPage } from "$lib/navigation";
+import { location, type Location } from "$lib/location";
+  import type { Component } from "svelte";
 import "./app.css";
 
-const path = window.location.pathname;
-
-async function loadPage() {
-  switch (path) {
-    case "/test1":
-      const test1 = await import("./pages/Default.svelte");
-      return test1.default;
-    case "/test2":
-      const test2 = await import("./pages/Test2.svelte");
-      return test2.default;
-    default:
-      switchPage("test1");
+async function loadPage(location: Location) {
+  let Page;
+  switch (location.page) {
+    case "athletes":
+      Page = await import("./pages/Athletes.svelte");
+      break;
+    case "athlete-details":
+      Page = await import("./pages/AthleteDetails.svelte");
+      break;
+    case "test2":
+      Page = await import("./pages/Test2.svelte");
+      break;
   }
+  return Page.default;
 }
+
+$inspect($location).with(console.log);
+let Page: Promise<Component> = $state(new Promise(() => {}));
+$effect(() => {
+  Page = loadPage($location);
+});
 </script>
 
-{#await loadPage()}
+{#await Page}
   <Loading />
-{:then page}
-  <svelte:component this={page} />
+{:then Page}
+  <Page />
 {/await}
