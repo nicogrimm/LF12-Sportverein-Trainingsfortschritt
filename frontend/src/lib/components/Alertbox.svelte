@@ -8,7 +8,7 @@ import AlertCircleIcon from "@lucide/svelte/icons/alert-circle";
 let { alerts } = useAlerts();
 </script>
 
-<div class="flex flex-col gap-2 p-2">
+<div class={`flex flex-col gap-2 ${$alerts.length != 0 ? "p-2" : ""}`}>
   {#each $alerts as alert}
     <Alert variant={alert.level == 'error' ? 'destructive' : 'default'}>
       {#if alert.level == 'info'}

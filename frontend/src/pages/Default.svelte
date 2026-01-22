@@ -1,5 +1,6 @@
 <script lang="ts">
 import ChevronDownIcon from "@lucide/svelte/icons/chevron-down";
+import RefreshCwIcon from "@lucide/svelte/icons/refresh-cw";
 import {
   type ColumnDef,
   type ColumnFiltersState,
@@ -46,20 +47,24 @@ async function loadData() {
   }
 }
 
+async function refreshList() {
+  promise = loadData();
+}
+
 let addAthleteDialogOpened = $state(false);
 let addAthleteFormRef: HTMLFormElement | null = $state(null);
 
 $effect(() => {
-  addAthleteDialogOpened; // run anytime the dialog is opened or closed
+  void addAthleteDialogOpened; // run if this changes
   clearAlerts();
 });
 
 async function submitAdd(event: SubmitEvent) {
   event.preventDefault();
-
   if (!addAthleteFormRef) {
     return;
   }
+  clearAlerts();
 
   let data = new FormData(event.target as HTMLFormElement);
   try {
@@ -70,12 +75,12 @@ async function submitAdd(event: SubmitEvent) {
   } catch (e) {
     console.error(e);
     addAlert({ level: "error", title: " Fehler beim Absenden der Daten" });
+    return;
   }
 
   addAthleteDialogOpened = false;
 
-  // refresh list
-  promise = loadData();
+  refreshList();
 }
 
 const columns: ColumnDef<Athlete>[] = [
@@ -224,7 +229,9 @@ const table = createSvelteTable({
 <main class="flex w-full flex-col items-start">
   <a href="/test2" class="underline">Zur Seite: Test2</a>
 
-  <Alertbox />
+  {#if !addAthleteDialogOpened}
+    <Alertbox />
+  {/if}
 
   {#await promise}
     <Loading />
@@ -253,12 +260,12 @@ const table = createSvelteTable({
             <Dialog.Header>
               <Dialog.Title>Athlete hinzufügen</Dialog.Title>
             </Dialog.Header>
-            <Alertbox />
             <form
               class="grid gap-4"
               bind:this={addAthleteFormRef}
               onsubmit={submitAdd}
             >
+              <Alertbox />
               <div class="grid gap-4">
                 <div class="grid gap-3">
                   <Label for="firstname-1">Vorname</Label>
@@ -270,14 +277,16 @@ const table = createSvelteTable({
                 </div>
               </div>
               <Dialog.Footer>
-                <Dialog.Close class={buttonVariants({ variant: "outline" })}
-                  >Abbrechen</Dialog.Close
+                <Dialog.Close
+                  class={buttonVariants({ variant: "outline" })}
+                  type="button">Abbrechen</Dialog.Close
                 >
                 <Button type="submit">Hinzufügen</Button>
               </Dialog.Footer>
             </form>
           </Dialog.Content>
         </Dialog.Root>
+        <Button onclick={refreshList}><RefreshCwIcon /></Button>
         <DropdownMenu.Root>
           <DropdownMenu.Trigger>
             {#snippet child({ props })}
