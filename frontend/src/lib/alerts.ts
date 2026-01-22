@@ -16,4 +16,7 @@ export const useAlerts = () => ({
       return list;
     });
   },
+  clearAlerts() {
+    alerts.set([]);
+  }
 });

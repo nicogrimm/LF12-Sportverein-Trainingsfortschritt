@@ -14,7 +14,7 @@ import {
 } from "@tanstack/table-core";
 import { createRawSnippet } from "svelte";
 import * as Table from "$lib/components/ui/table/index.js";
-import { Button } from "$lib/components/ui/button/index.js";
+import { Button, buttonVariants } from "$lib/components/ui/button/index.js";
 import * as DropdownMenu from "$lib/components/ui/dropdown-menu/index.js";
 import { Input } from "$lib/components/ui/input/index.js";
 import {
@@ -28,17 +28,55 @@ import { athleteService, type Athlete } from "$lib/service/athleteService";
 import Loading from "$lib/components/Loading.svelte";
 import Alertbox from "$lib/components/Alertbox.svelte";
 import { useAlerts } from "$lib/alerts";
+import * as Dialog from "$lib/components/ui/dialog";
+import { Label } from "$lib/components/ui/label";
 
-let { addAlert } = useAlerts();
+let { addAlert, clearAlerts } = useAlerts();
 
 let data: Athlete[] = [];
-let promise = athleteService
-  .getAthletes()
-  .then((athletes) => (data = athletes))
-  .catch((err) => {
+let promise = $state(loadData());
+
+async function loadData() {
+  try {
+    const athletes = await athleteService.getAthletes();
+    return (data = athletes);
+  } catch (err) {
     console.error(err);
-    addAlert({ level: "error", title: "Fehler beim holen der Daten" });
-  });
+    addAlert({ level: "error", title: "Fehler beim Holen der Daten" });
+  }
+}
+
+let addAthleteDialogOpened = $state(false);
+let addAthleteFormRef: HTMLFormElement | null = $state(null);
+
+$effect(() => {
+  addAthleteDialogOpened; // run anytime the dialog is opened or closed
+  clearAlerts();
+});
+
+async function submitAdd(event: SubmitEvent) {
+  event.preventDefault();
+
+  if (!addAthleteFormRef) {
+    return;
+  }
+
+  let data = new FormData(event.target as HTMLFormElement);
+  try {
+    await athleteService.createAthlete({
+      firstname: data.get("firstname")!.toString(),
+      name: data.get("name")!.toString(),
+    });
+  } catch (e) {
+    console.error(e);
+    addAlert({ level: "error", title: " Fehler beim Absenden der Daten" });
+  }
+
+  addAthleteDialogOpened = false;
+
+  // refresh list
+  promise = loadData();
+}
 
 const columns: ColumnDef<Athlete>[] = [
   // {
@@ -192,7 +230,7 @@ const table = createSvelteTable({
     <Loading />
   {:then}
     <div class="-mb-8 w-full">
-      <div class="flex items-center py-4">
+      <div class="flex items-center gap-4 py-4">
         <Input
           placeholder="Filter nach Namen..."
           value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
@@ -203,6 +241,43 @@ const table = createSvelteTable({
    }}
           class="max-w-sm"
         />
+
+        <Dialog.Root bind:open={addAthleteDialogOpened}>
+          <Dialog.Trigger
+            class={buttonVariants({ variant: "default" })}
+            aria-label="Neuen Athleten hinzufügen"
+          >
+            +
+          </Dialog.Trigger>
+          <Dialog.Content class="sm:max-w-[425px]">
+            <Dialog.Header>
+              <Dialog.Title>Athlete hinzufügen</Dialog.Title>
+            </Dialog.Header>
+            <Alertbox />
+            <form
+              class="grid gap-4"
+              bind:this={addAthleteFormRef}
+              onsubmit={submitAdd}
+            >
+              <div class="grid gap-4">
+                <div class="grid gap-3">
+                  <Label for="firstname-1">Vorname</Label>
+                  <Input id="firstname-1" name="firstname" />
+                </div>
+                <div class="grid gap-3">
+                  <Label for="name-1">Nachname</Label>
+                  <Input id="name-1" name="name" />
+                </div>
+              </div>
+              <Dialog.Footer>
+                <Dialog.Close class={buttonVariants({ variant: "outline" })}
+                  >Abbrechen</Dialog.Close
+                >
+                <Button type="submit">Hinzufügen</Button>
+              </Dialog.Footer>
+            </form>
+          </Dialog.Content>
+        </Dialog.Root>
         <DropdownMenu.Root>
           <DropdownMenu.Trigger>
             {#snippet child({ props })}
