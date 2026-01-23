@@ -32,6 +32,7 @@ import Alertbox from "$lib/components/Alertbox.svelte";
 import { addAlert, clearAlerts } from "$lib/alerts";
 import * as Dialog from "$lib/components/ui/dialog";
 import { Label } from "$lib/components/ui/label";
+import { getErrorMessage } from "$lib/service/fetchUtils";
 
 let data: Athlete[] = [];
 let promise = $state(loadData());
@@ -41,7 +42,11 @@ async function loadData() {
     return await athleteService.getAthletes().then((list) => (data = list));
   } catch (err) {
     console.error(err);
-    addAlert({ level: "error", title: "Fehler beim Holen der Daten" });
+    addAlert({
+      level: "error",
+      title: "Fehler beim Holen der Athleten",
+      description: getErrorMessage(err)
+    });
   }
 }
 
@@ -72,7 +77,11 @@ async function submitAdd(event: SubmitEvent) {
     });
   } catch (e) {
     console.error(e);
-    addAlert({ level: "error", title: " Fehler beim Absenden der Daten" });
+    addAlert({
+      level: "error",
+      title: "Fehler beim Erstellen des Athleten",
+      description: getErrorMessage(e)
+    });
     return;
   }
 
@@ -90,7 +99,11 @@ async function handleDelete() {
         await athleteService.deleteAthlete(data[i].id);
       } catch (err) {
         console.error(err);
-        addAlert({ level: "error", title: "Fehler beim Löschen der Daten" });
+        addAlert({
+          level: "error",
+          title: "Fehler beim Löschen des Athleten",
+          description: getErrorMessage(err)
+        });
       }
     }
   }

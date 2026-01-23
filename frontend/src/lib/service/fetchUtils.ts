@@ -1,3 +1,11 @@
+export type BackendErrorResponse = {
+    timestamp: string;
+    status: number;
+    error: string;
+    message: string;
+    path: string;
+};
+
 export class HttpError extends Error {
     constructor(
         public status: number,
@@ -8,6 +16,31 @@ export class HttpError extends Error {
         super(`HTTP ${status} ${statusText}: ${url}`);
         this.name = "HttpError";
     }
+
+    getBackendError(): BackendErrorResponse | null {
+        if (
+            this.body &&
+            typeof this.body === "object" &&
+            "message" in this.body
+        ) {
+            return this.body as BackendErrorResponse;
+        }
+        return null;
+    }
+}
+
+export function getErrorMessage(error: unknown): string {
+    if (error instanceof HttpError) {
+        const backendError = error.getBackendError();
+        if (backendError) {
+            return backendError.message;
+        }
+        return `HTTP ${error.status}: ${error.statusText}`;
+    }
+    if (error instanceof Error) {
+        return error.message;
+    }
+    return "Ein unbekannter Fehler ist aufgetreten";
 }
 
 export async function fetchWithErrorHandling(

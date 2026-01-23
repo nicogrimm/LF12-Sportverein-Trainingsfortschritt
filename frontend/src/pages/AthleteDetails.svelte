@@ -8,6 +8,7 @@ import Button, {
   buttonVariants,
 } from "$lib/components/ui/button/button.svelte";
 import * as AlertDialog from "$lib/components/ui/alert-dialog";
+import { getErrorMessage } from "$lib/service/fetchUtils";
 
 let data: Athlete | undefined = $state();
 let promise = $state(loadData());
@@ -26,7 +27,11 @@ async function loadData() {
       .then((athlete) => (data = athlete));
   } catch (err) {
     console.error(err);
-    addAlert({ level: "error", title: "Fehler beim Holen der Daten" });
+    addAlert({
+      level: "error",
+      title: "Fehler beim Holen der Athleten-Details",
+      description: getErrorMessage(err)
+    });
   }
 }
 
@@ -36,7 +41,11 @@ async function handleDelete() {
     window.history.back();
   } catch (err) {
     console.error(err);
-    addAlert({ level: "error", title: "Fehler beim Löschen der Daten" });
+    addAlert({
+      level: "error",
+      title: "Fehler beim Löschen des Athleten",
+      description: getErrorMessage(err)
+    });
   }
   deleteDialogOpen = false;
 }

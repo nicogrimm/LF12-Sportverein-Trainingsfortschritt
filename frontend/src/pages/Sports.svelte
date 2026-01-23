@@ -32,6 +32,7 @@ import { addAlert, clearAlerts } from "$lib/alerts";
 import * as Dialog from "$lib/components/ui/dialog";
 import { Label } from "$lib/components/ui/label";
 import { sportService, type Sport } from "$lib/service/sportService";
+import { getErrorMessage } from "$lib/service/fetchUtils";
 
 let data: Sport[] = [];
 let promise = $state(loadData());
@@ -41,7 +42,11 @@ async function loadData() {
     return await sportService.getSports().then((list) => (data = list));
   } catch (err) {
     console.error(err);
-    addAlert({ level: "error", title: "Fehler beim Holen der Daten" });
+    addAlert({
+      level: "error",
+      title: "Fehler beim Holen der Sportarten",
+      description: getErrorMessage(err)
+    });
   }
 }
 
@@ -72,7 +77,11 @@ async function submitAdd(event: SubmitEvent) {
     });
   } catch (e) {
     console.error(e);
-    addAlert({ level: "error", title: " Fehler beim Absenden der Daten" });
+    addAlert({
+      level: "error",
+      title: "Fehler beim Erstellen der Sportart",
+      description: getErrorMessage(e)
+    });
     return;
   }
 
@@ -90,7 +99,11 @@ async function handleDelete() {
         await sportService.deleteSport(data[i].id);
       } catch (err) {
         console.error(err);
-        addAlert({ level: "error", title: "Fehler beim Löschen der Daten" });
+        addAlert({
+          level: "error",
+          title: "Fehler beim Löschen der Sportart",
+          description: getErrorMessage(err)
+        });
       }
     }
   }
