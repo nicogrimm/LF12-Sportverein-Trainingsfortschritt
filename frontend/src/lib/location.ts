@@ -44,6 +44,20 @@ function readLocation(): Location {
       }
 
       return { page: "athletes" };
+    case "sports":
+      if (pathParts[1]) {
+        let id;
+        try {
+          id = parseInt(pathParts[1]);
+        } catch {
+          addAlert({ level: "error", title: "Id muss eine Zahl seien" });
+          break;
+        }
+
+        return { page: "sport-details", sportId: id };
+      }
+
+      return { page: "sports" };
     case "test2":
       return { page: "test2" };
   }
@@ -66,6 +80,14 @@ export function switchLocation(newLocation: Location) {
       break;
     case "athletes":
       url.pathname = "/athletes";
+      window.history.pushState({}, "", url.toString());
+      break;
+    case "sport-details":
+      url.pathname = "/sports/" + newLocation.sportId;
+      window.history.pushState({}, "", url.toString());
+      break;
+    case "sports":
+      url.pathname = "/sports";
       window.history.pushState({}, "", url.toString());
       break;
     case "test2":
