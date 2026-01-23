@@ -52,7 +52,7 @@ public class TrainingController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
         }
     }
-    
+
     /**
      * GET /api/trainings/sport/{sportId}
      * Gibt alle Trainings einer Sportart zurück
@@ -112,12 +112,11 @@ public class TrainingController {
     }
     
     /**
-     * POST /api/trainings/athlete/{athleteId}
+     * POST /api/trainings/athlete
      * Erstellt ein neues Training für einen Athleten
      */
-    @PostMapping("/athlete/{athleteId}")
+    @PostMapping("/athlete")
     public ResponseEntity<?> createTrainingForAthlete(
-            @PathVariable int athleteId,
             @RequestBody CreateTrainingDto dto) {
         try {
             if (dto.getSportId() <= 0) {
@@ -125,7 +124,7 @@ public class TrainingController {
                     HttpStatus.BAD_REQUEST.value(),
                     "Bad Request",
                     "Ungültige Sportart-ID",
-                    "/api/trainings/athlete/" + athleteId
+                    "/api/trainings/athlete"
                 );
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
             }
@@ -135,7 +134,7 @@ public class TrainingController {
                     HttpStatus.BAD_REQUEST.value(),
                     "Bad Request",
                     "Das Trainingsdatum darf nicht leer sein",
-                    "/api/trainings/athlete/" + athleteId
+                    "/api/trainings/athlete"
                 );
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
             }
@@ -145,30 +144,30 @@ public class TrainingController {
                     HttpStatus.BAD_REQUEST.value(),
                     "Bad Request",
                     "Der Metrikwert muss größer als 0 sein",
-                    "/api/trainings/athlete/" + athleteId
+                    "/api/trainings/athlete"
                 );
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
             }
             
-            TrainingDto created = trainingService.createForAthlete(athleteId, dto);
-            log.info("Created training {} for athlete {}", created.getId(), athleteId);
+            TrainingDto created = trainingService.createForAthlete(dto.getAthleteId(), dto);
+            log.info("Created training {} for athlete {}", created.getId(), created.getAthleteId());
             return ResponseEntity.status(HttpStatus.CREATED).body(created);
         } catch (IllegalArgumentException e) {
-            log.warn("Invalid data for creating training for athlete {}: {}", athleteId, e.getMessage());
+            log.warn("Invalid data for creating training for athlete {}: {}", dto.getAthleteId(), e.getMessage());
             ErrorResponse error = new ErrorResponse(
                 HttpStatus.BAD_REQUEST.value(),
                 "Bad Request",
                 "Ungültige Daten: " + e.getMessage(),
-                "/api/trainings/athlete/" + athleteId
+                "/api/trainings/athlete/" + dto.getAthleteId()  
             );
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
         } catch (Exception e) {
-            log.error("Error creating training for athlete {}", athleteId, e);
+            log.error("Error creating training for athlete {}", dto.getAthleteId(), e);
             ErrorResponse error = new ErrorResponse(
                 HttpStatus.INTERNAL_SERVER_ERROR.value(),
                 "Internal Server Error",
                 "Fehler beim Erstellen des Trainings: " + e.getMessage(),
-                "/api/trainings/athlete/" + athleteId
+                "/api/trainings/athlete/" + dto.getAthleteId()
             );
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
         }
