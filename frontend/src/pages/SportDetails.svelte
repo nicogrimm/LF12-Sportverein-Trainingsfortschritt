@@ -50,17 +50,15 @@ async function handleDelete() {
           <span class="w-full border border-slate-700"></span>
           <span>{data?.id}</span>
         </div>
-        <div class="flex w-fit flex-row gap-2">
-          <div class="flex flex-col gap-2">
-            <span class="font-bold">Nachname</span>
-            <span class="w-full border border-slate-700"></span>
-            <span>{data?.name}</span>
-          </div>
-          <div class="flex flex-col gap-2">
-            <span class="font-bold">Einheit</span>
-            <span class="w-full border border-slate-700"></span>
-            <span>{data?.unit}</span>
-          </div>
+        <div class="flex w-fit flex-col gap-2">
+          <span class="font-bold">Name</span>
+          <span class="w-full border border-slate-700"></span>
+          <span>{data?.name}</span>
+        </div>
+        <div class="flex w-fit flex-col gap-2">
+          <span class="font-bold">Einheit</span>
+          <span class="w-full border border-slate-700"></span>
+          <span>{data?.unit}</span>
         </div>
       </div>
 
