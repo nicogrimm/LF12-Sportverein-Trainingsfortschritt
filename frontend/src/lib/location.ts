@@ -7,7 +7,11 @@ export type Location =
     athleteId: number;
   }
   | {
-    page: "athletes" | "test2";
+    page: "sport-details";
+    sportId: number;
+  }
+  | {
+    page: "sports" | "athletes" | "test2";
   };
 
 export const location = writable<Location>(readLocation());

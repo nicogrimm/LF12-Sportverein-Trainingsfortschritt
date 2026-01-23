@@ -23,22 +23,22 @@ import {
   renderSnippet,
 } from "$lib/components/ui/data-table/index.js";
 import DataTableButton from "$lib/components/DataTableButton.svelte";
-import AthleteDataTableActions from "$lib/components/AthleteDataTableActions.svelte";
+import SportDataTableActions from "$lib/components/SportDataTableActions.svelte";
 import DataTableCheckbox from "$lib/components/DataTableCheckbox.svelte";
-import { athleteService, type Athlete } from "$lib/service/athleteService";
 import * as AlertDialog from "$lib/components/ui/alert-dialog";
 import Loading from "$lib/components/Loading.svelte";
 import Alertbox from "$lib/components/Alertbox.svelte";
 import { addAlert, clearAlerts } from "$lib/alerts";
 import * as Dialog from "$lib/components/ui/dialog";
 import { Label } from "$lib/components/ui/label";
+import { sportService, type Sport } from "$lib/service/sportService";
 
-let data: Athlete[] = [];
+let data: Sport[] = [];
 let promise = $state(loadData());
 
 async function loadData() {
   try {
-    return await athleteService.getAthletes().then((list) => (data = list));
+    return await sportService.getSports().then((list) => (data = list));
   } catch (err) {
     console.error(err);
     addAlert({ level: "error", title: "Fehler beim Holen der Daten" });
@@ -50,26 +50,26 @@ async function refreshData() {
   promise = loadData();
 }
 
-let addAthleteDialogOpened = $state(false);
-let addAthleteFormRef: HTMLFormElement | null = $state(null);
+let addSportDialogOpened = $state(false);
+let addSportFormRef: HTMLFormElement | null = $state(null);
 
 $effect(() => {
-  void addAthleteDialogOpened; // run if this changes
+  void addSportDialogOpened; // run if this changes
   clearAlerts();
 });
 
 async function submitAdd(event: SubmitEvent) {
   event.preventDefault();
-  if (!addAthleteFormRef) {
+  if (!addSportFormRef) {
     return;
   }
   clearAlerts();
 
   let data = new FormData(event.target as HTMLFormElement);
   try {
-    await athleteService.createAthlete({
-      firstname: data.get("firstname")!.toString(),
+    await sportService.createSport({
       name: data.get("name")!.toString(),
+      unit: data.get("unit")!.toString(),
     });
   } catch (e) {
     console.error(e);
@@ -77,7 +77,7 @@ async function submitAdd(event: SubmitEvent) {
     return;
   }
 
-  addAthleteDialogOpened = false;
+  addSportDialogOpened = false;
 
   refreshData();
 }
@@ -85,7 +85,7 @@ async function submitAdd(event: SubmitEvent) {
 async function handleDelete() {
   for (let i = 0; i < data.length; i++) {
     if (rowSelection[i]) {
-      await athleteService.deleteAthlete(data[i].id);
+      await sportService.deleteSport(data[i].id);
     }
   }
   rowSelection = {};
@@ -93,7 +93,7 @@ async function handleDelete() {
   refreshData();
 }
 
-const columns: ColumnDef<Athlete>[] = [
+const columns: ColumnDef<Sport>[] = [
   {
     id: "select",
     header: ({ table }) =>
@@ -135,26 +135,42 @@ const columns: ColumnDef<Athlete>[] = [
     },
   },
   {
-    id: "name",
-    accessorFn: (row) => row.firstname + " " + row.name,
+    accessorKey: "name",
     header: ({ column }) =>
       renderComponent(DataTableButton, {
         text: "Name",
         onclick: column.getToggleSortingHandler(),
       }),
     cell: ({ row }) => {
-      const nameSnippet = createRawSnippet<
-        [{ firstname: string; name: string }]
-      >((getName) => {
-        const { firstname, name } = getName();
+      const nameSnippet = createRawSnippet<[{ name: string }]>((getName) => {
+        const { name } = getName();
         return {
-          render: () => `<div>${firstname} ${name}</div>`,
+          render: () => `<div>${name}</div>`,
         };
       });
 
       return renderSnippet(nameSnippet, {
-        firstname: row.original.firstname,
         name: row.original.name,
+      });
+    },
+  },
+  {
+    accessorKey: "unit",
+    header: ({ column }) =>
+      renderComponent(DataTableButton, {
+        text: "Einheit",
+        onclick: column.getToggleSortingHandler(),
+      }),
+    cell: ({ row }) => {
+      const unitSnippet = createRawSnippet<[{ unit: string }]>((getUnit) => {
+        const { unit } = getUnit();
+        return {
+          render: () => `<div>${unit}</div>`,
+        };
+      });
+
+      return renderSnippet(unitSnippet, {
+        unit: row.original.unit,
       });
     },
   },
@@ -162,7 +178,7 @@ const columns: ColumnDef<Athlete>[] = [
     id: "actions",
     enableHiding: false,
     cell: ({ row }) =>
-      renderComponent(AthleteDataTableActions, { athlete: row.original }),
+      renderComponent(SportDataTableActions, { sport: row.original }),
   },
 ];
 
@@ -237,7 +253,7 @@ const table = createSvelteTable({
 </script>
 
 <main class="flex w-full flex-col items-start">
-  {#if !addAthleteDialogOpened}
+  {#if !addSportDialogOpened}
     <Alertbox />
   {/if}
 
@@ -257,31 +273,31 @@ const table = createSvelteTable({
           class="max-w-sm"
         />
 
-        <Dialog.Root bind:open={addAthleteDialogOpened}>
+        <Dialog.Root bind:open={addSportDialogOpened}>
           <Dialog.Trigger
             class={buttonVariants({ variant: "default" })}
-            aria-label="Neuen Athleten hinzufügen"
+            aria-label="Neue Sportart hinzufügen"
           >
             +
           </Dialog.Trigger>
           <Dialog.Content class="sm:max-w-[425px]">
             <Dialog.Header>
-              <Dialog.Title>Athlete hinzufügen</Dialog.Title>
+              <Dialog.Title>Sportart hinzufügen</Dialog.Title>
             </Dialog.Header>
             <form
               class="grid gap-4"
-              bind:this={addAthleteFormRef}
+              bind:this={addSportFormRef}
               onsubmit={submitAdd}
             >
               <Alertbox />
               <div class="grid gap-4">
                 <div class="grid gap-3">
-                  <Label for="firstname-1">Vorname</Label>
-                  <Input id="firstname-1" name="firstname" />
+                  <Label for="name-1">Name</Label>
+                  <Input id="name-1" name="name" />
                 </div>
                 <div class="grid gap-3">
-                  <Label for="name-1">Nachname</Label>
-                  <Input id="name-1" name="name" />
+                  <Label for="name-1">Einheit</Label>
+                  <Input id="name-1" name="unit" />
                 </div>
               </div>
               <Dialog.Footer>

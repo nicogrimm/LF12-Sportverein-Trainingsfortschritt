@@ -24,8 +24,6 @@ async function fetchTest() {
 >
   <h2>Test2 page</h2>
 
-  <a href="/" class="underline">Go to home</a>
-
   <div class="gap-2">
     <Alertbox />
 
