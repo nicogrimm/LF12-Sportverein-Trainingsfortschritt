@@ -14,7 +14,7 @@ Eine Anwendung zur Verwaltung und Verfolgung von Trainingsfortschritten in einem
 
 ```bash
 cd backend
-docker-compose up -d
+docker-compose up db -d
 ```
 
 Die PostgreSQL-Datenbank läuft dann auf `localhost:5432`.
@@ -24,6 +24,11 @@ Die PostgreSQL-Datenbank läuft dann auf `localhost:5432`.
 ```bash
 cd backend
 ./mvnw spring-boot:run
+```
+
+Alternativ können sie das Backend auch als Docker-Image kompilieren und ausführen:
+```bash
+docker compose up -d
 ```
 
 Die Spring Boot-Anwendung läuft dann auf `http://localhost:8080`.
