@@ -12,6 +12,7 @@ import { getErrorMessage } from "$lib/service/fetchUtils";
 import { Input } from "$lib/components/ui/input/index.js";
 import * as Dialog from "$lib/components/ui/dialog";
 import { Label } from "$lib/components/ui/label";
+import TrainingsTable from "$lib/components/TrainingsTable.svelte";
 
 let data: Sport | undefined = $state();
 let promise = $state(loadData());
@@ -35,7 +36,7 @@ async function loadData() {
     addAlert({
       level: "error",
       title: "Fehler beim Holen der Sportart-Details",
-      description: getErrorMessage(err)
+      description: getErrorMessage(err),
     });
   }
 }
@@ -53,7 +54,7 @@ async function handleDelete() {
     addAlert({
       level: "error",
       title: "Fehler beim Löschen der Sportart",
-      description: getErrorMessage(err)
+      description: getErrorMessage(err),
     });
   }
   deleteDialogOpen = false;
@@ -72,7 +73,7 @@ async function submitUpdate(event: SubmitEvent) {
     await sportService.updateSport({
       id: data!.id,
       name: formData.get("name")!.toString(),
-      unit: formData.get("unit")!.toString()
+      unit: formData.get("unit")!.toString(),
     });
   } catch (e) {
     console.error(e);
@@ -183,5 +184,9 @@ async function submitUpdate(event: SubmitEvent) {
         </AlertDialog.Root>
       </div>
     </div>
+
+    {#if data?.id}
+      <TrainingsTable variant="sport" parentId={data.id} />
+    {/if}
   {/await}
 </main>

@@ -12,6 +12,7 @@ import { getErrorMessage } from "$lib/service/fetchUtils";
 import { Input } from "$lib/components/ui/input/index.js";
 import * as Dialog from "$lib/components/ui/dialog";
 import { Label } from "$lib/components/ui/label";
+  import TrainingsTable from "$lib/components/TrainingsTable.svelte";
 
 let data: Athlete | undefined = $state();
 let promise = $state(loadData());
@@ -184,6 +185,10 @@ async function submitUpdate(event: SubmitEvent) {
           </AlertDialog.Content>
         </AlertDialog.Root>
       </div>
+
+      {#if data?.id}
+        <TrainingsTable variant="athlet" parentId={data.id} />
+      {/if}
     </div>
   {/await}
 </main>
