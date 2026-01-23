@@ -1,4 +1,5 @@
 import { baseUrl } from "./config";
+import { fetchWithErrorHandling } from "./fetchUtils";
 
 export type Training = {
     id: number;
@@ -10,11 +11,11 @@ export type Training = {
 
 class TrainingService {
     async getAllTrainings(): Promise<Training[]> {
-        return await fetch(`${baseUrl}/api/trainings`).then((resp) => resp.json());
+        return await fetchWithErrorHandling(`${baseUrl}/api/trainings`).then((resp) => resp.json());
     }
 
     async getTrainingsForAthlete(athleteId: number): Promise<Training[]> {
-        return await fetch(`${baseUrl}/api/trainings/athlete/${athleteId}`).then(
+        return await fetchWithErrorHandling(`${baseUrl}/api/trainings/athlete/${athleteId}`).then(
             (resp) => resp.json(),
         );
     }
@@ -23,7 +24,7 @@ class TrainingService {
         athleteId: number,
         trainingId: number,
     ): Promise<Training> {
-        return await fetch(
+        return await fetchWithErrorHandling(
             `${baseUrl}/api/trainings/athlete/${athleteId}/training/${trainingId}`,
         ).then((resp) => resp.json());
     }
@@ -32,7 +33,7 @@ class TrainingService {
         athleteId: number,
         training: Omit<Training, "id">,
     ): Promise<Training> {
-        return await fetch(`${baseUrl}/api/trainings/athlete/${athleteId}`, {
+        return await fetchWithErrorHandling(`${baseUrl}/api/trainings/athlete/${athleteId}`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -46,7 +47,7 @@ class TrainingService {
         trainingId: number,
         training: Omit<Training, "id">,
     ): Promise<Training> {
-        return await fetch(
+        return await fetchWithErrorHandling(
             `${baseUrl}/api/trainings/athlete/${athleteId}/training/${trainingId}`,
             {
                 method: "PUT",
@@ -62,7 +63,7 @@ class TrainingService {
         athleteId: number,
         trainingId: number,
     ): Promise<void> {
-        await fetch(
+        await fetchWithErrorHandling(
             `${baseUrl}/api/trainings/athlete/${athleteId}/training/${trainingId}`,
             {
                 method: "DELETE",

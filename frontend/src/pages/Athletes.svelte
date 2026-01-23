@@ -46,7 +46,6 @@ async function loadData() {
 }
 
 async function refreshData() {
-  clearAlerts();
   promise = loadData();
 }
 
@@ -83,9 +82,16 @@ async function submitAdd(event: SubmitEvent) {
 }
 
 async function handleDelete() {
+  clearAlerts();
+
   for (let i = 0; i < data.length; i++) {
     if (rowSelection[i]) {
-      await athleteService.deleteAthlete(data[i].id);
+      try {
+        await athleteService.deleteAthlete(data[i].id);
+      } catch (err) {
+        console.error(err);
+        addAlert({ level: "error", title: "Fehler beim Löschen der Daten" });
+      }
     }
   }
   rowSelection = {};

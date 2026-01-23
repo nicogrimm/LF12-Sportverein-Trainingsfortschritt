@@ -1,4 +1,5 @@
 import { baseUrl } from "./config";
+import { fetchWithErrorHandling } from "./fetchUtils";
 
 export type Sport = {
     id: number;
@@ -8,17 +9,17 @@ export type Sport = {
 
 class SportService {
     async getSports(): Promise<Sport[]> {
-        return await fetch(`${baseUrl}/api/sports`).then((resp) => resp.json());
+        return await fetchWithErrorHandling(`${baseUrl}/api/sports`).then((resp) => resp.json());
     }
 
     async getSportById(id: number): Promise<Sport> {
-        return await fetch(`${baseUrl}/api/sports/${id}`).then((resp) =>
+        return await fetchWithErrorHandling(`${baseUrl}/api/sports/${id}`).then((resp) =>
             resp.json(),
         );
     }
 
     async createSport(sport: Omit<Sport, "id">): Promise<Sport> {
-        return await fetch(`${baseUrl}/api/sports`, {
+        return await fetchWithErrorHandling(`${baseUrl}/api/sports`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -28,7 +29,7 @@ class SportService {
     }
 
     async updateSport(sport: Sport): Promise<Sport> {
-        return await fetch(`${baseUrl}/api/sports/${sport.id}`, {
+        return await fetchWithErrorHandling(`${baseUrl}/api/sports/${sport.id}`, {
             method: "PUT",
             headers: {
                 "Content-Type": "application/json",
@@ -38,7 +39,7 @@ class SportService {
     }
 
     async deleteSport(id: number): Promise<void> {
-        await fetch(`${baseUrl}/api/sports/${id}`, {
+        await fetchWithErrorHandling(`${baseUrl}/api/sports/${id}`, {
             method: "DELETE",
         });
     }

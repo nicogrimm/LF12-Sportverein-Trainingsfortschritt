@@ -12,6 +12,8 @@ import * as AlertDialog from "$lib/components/ui/alert-dialog";
 let data: Athlete | undefined = $state();
 let promise = $state(loadData());
 
+let deleteDialogOpen = $state(false);
+
 async function loadData() {
   try {
     if ($location.page !== "athlete-details") {
@@ -29,8 +31,14 @@ async function loadData() {
 }
 
 async function handleDelete() {
-  await athleteService.deleteAthlete(data!.id);
-  window.history.back();
+  try {
+    await athleteService.deleteAthlete(data!.id);
+    window.history.back();
+  } catch (err) {
+    console.error(err);
+    addAlert({ level: "error", title: "Fehler beim Löschen der Daten" });
+  }
+  deleteDialogOpen = false;
 }
 </script>
 
@@ -65,7 +73,7 @@ async function handleDelete() {
       </div>
 
       <div class="flex-row gap-2">
-        <AlertDialog.Root>
+        <AlertDialog.Root bind:open={deleteDialogOpen}>
           <AlertDialog.Trigger
             class={buttonVariants({ variant: "destructive" })}
           >

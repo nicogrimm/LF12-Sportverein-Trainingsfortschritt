@@ -12,6 +12,8 @@ import { sportService, type Sport } from "$lib/service/sportService";
 let data: Sport | undefined = $state();
 let promise = $state(loadData());
 
+let deleteDialogOpen = $state(false);
+
 async function loadData() {
   try {
     if ($location.page !== "sport-details") {
@@ -29,8 +31,14 @@ async function loadData() {
 }
 
 async function handleDelete() {
-  await sportService.deleteSport(data!.id);
-  window.history.back();
+  try {
+    await sportService.deleteSport(data!.id);
+    window.history.back();
+  } catch (err) {
+    console.error(err);
+    addAlert({ level: "error", title: "Fehler beim Löschen der Daten" });
+  }
+  deleteDialogOpen = false;
 }
 </script>
 
@@ -63,7 +71,7 @@ async function handleDelete() {
       </div>
 
       <div class="flex-row gap-2">
-        <AlertDialog.Root>
+        <AlertDialog.Root bind:open={deleteDialogOpen}>
           <AlertDialog.Trigger
             class={buttonVariants({ variant: "destructive" })}
           >
