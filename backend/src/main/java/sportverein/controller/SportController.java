@@ -115,7 +115,7 @@ public class SportController {
             }
             
             SportDto created = sportService.create(dto);
-            log.info("Created sport with id {}", created.getSportId());
+            log.info("Created sport with id {}", created.getId());
             return ResponseEntity.status(HttpStatus.CREATED).body(created);
         } catch (Exception e) {
             log.error("Error creating sport", e);
@@ -160,7 +160,7 @@ public class SportController {
             
             return sportService.update(id, dto)
                     .map(sport -> {
-                        log.info("Updated sport with id {}", id);
+                        log.info("Updated sport with id {}", sport.getId());
                         return ResponseEntity.ok((Object) sport);
                     })
                     .orElseGet(() -> {
