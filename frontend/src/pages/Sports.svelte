@@ -69,7 +69,7 @@ async function submitAdd(event: SubmitEvent) {
   }
   clearAlerts();
 
-  let data = new FormData(event.target as HTMLFormElement);
+  let data = new FormData(addSportFormRef);
   try {
     await sportService.createSport({
       name: data.get("name")!.toString(),

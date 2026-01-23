@@ -1,7 +1,7 @@
 <script lang="ts">
 import Loading from "$lib/components/Loading.svelte";
 import Alertbox from "$lib/components/Alertbox.svelte";
-import { addAlert } from "$lib/alerts";
+import { addAlert, clearAlerts } from "$lib/alerts";
 import { location } from "$lib/location";
 import Button, {
   buttonVariants,
@@ -9,10 +9,15 @@ import Button, {
 import * as AlertDialog from "$lib/components/ui/alert-dialog";
 import { sportService, type Sport } from "$lib/service/sportService";
 import { getErrorMessage } from "$lib/service/fetchUtils";
+import { Input } from "$lib/components/ui/input/index.js";
+import * as Dialog from "$lib/components/ui/dialog";
+import { Label } from "$lib/components/ui/label";
 
 let data: Sport | undefined = $state();
 let promise = $state(loadData());
 
+let editDialogOpened = $state(false);
+let editSportFormRef: HTMLFormElement | null = $state(null);
 let deleteDialogOpen = $state(false);
 
 async function loadData() {
@@ -35,6 +40,10 @@ async function loadData() {
   }
 }
 
+async function refreshData() {
+  promise = loadData();
+}
+
 async function handleDelete() {
   try {
     await sportService.deleteSport(data!.id);
@@ -49,6 +58,35 @@ async function handleDelete() {
   }
   deleteDialogOpen = false;
 }
+
+async function submitUpdate(event: SubmitEvent) {
+  event.preventDefault();
+  if (!editSportFormRef) {
+    return;
+  }
+
+  clearAlerts();
+
+  let formData = new FormData(editSportFormRef);
+  try {
+    await sportService.updateSport({
+      id: data!.id,
+      name: formData.get("name")!.toString(),
+      unit: formData.get("unit")!.toString()
+    });
+  } catch (e) {
+    console.error(e);
+    addAlert({
+      level: "error",
+      title: "Fehler beim Ändern der Daten",
+      description: getErrorMessage(e),
+    });
+    return;
+  }
+
+  editDialogOpened = false;
+  refreshData();
+}
 </script>
 
 <main class="flex w-full flex-col items-start">
@@ -59,7 +97,9 @@ async function handleDelete() {
       <Button class="w-fit" onclick={() => window.history.back()}>Zurück</Button
       >
 
-      <Alertbox />
+      {#if !editDialogOpened}
+        <Alertbox />
+      {/if}
 
       <div class="wrap flex flex-col gap-4">
         <div class="flex w-fit flex-col gap-2">
@@ -80,6 +120,44 @@ async function handleDelete() {
       </div>
 
       <div class="flex-row gap-2">
+        <Dialog.Root bind:open={editDialogOpened}>
+          <Dialog.Trigger
+            class={buttonVariants({ variant: "default" })}
+            aria-label="bearbeiten"
+          >
+            Bearbeiten
+          </Dialog.Trigger>
+          <Dialog.Content class="sm:max-w-[425px]">
+            <Dialog.Header>
+              <Dialog.Title>Athleten bearbeiten</Dialog.Title>
+            </Dialog.Header>
+            <form
+              class="grid gap-4"
+              bind:this={editSportFormRef}
+              onsubmit={submitUpdate}
+            >
+              <Alertbox />
+              <div class="grid gap-4">
+                <div class="grid gap-3">
+                  <Label for="name-1">Name</Label>
+                  <Input id="name-1" name="name" value={data?.name} />
+                </div>
+                <div class="grid gap-3">
+                  <Label for="unit-1">Einheit</Label>
+                  <Input id="unit-1" name="unit" value={data?.unit} />
+                </div>
+              </div>
+              <Dialog.Footer>
+                <Dialog.Close
+                  class={buttonVariants({ variant: "outline" })}
+                  type="button">Abbrechen</Dialog.Close
+                >
+                <Button type="submit">Speichern</Button>
+              </Dialog.Footer>
+            </form>
+          </Dialog.Content>
+        </Dialog.Root>
+
         <AlertDialog.Root bind:open={deleteDialogOpen}>
           <AlertDialog.Trigger
             class={buttonVariants({ variant: "destructive" })}
