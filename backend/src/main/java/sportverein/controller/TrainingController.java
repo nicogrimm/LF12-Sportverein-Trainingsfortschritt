@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import sportverein.dto.CreateTrainingDto;
+import sportverein.dto.ErrorResponse;
 import sportverein.dto.TrainingDto;
 import sportverein.dto.UpdateTrainingDto;
 import sportverein.service.TrainingService;
@@ -35,9 +36,21 @@ public class TrainingController {
      * Gibt alle Trainings eines Athleten zurück
      */
     @GetMapping("/athlete/{athleteId}")
-    public ResponseEntity<List<TrainingDto>> getTrainingsForAthlete(@PathVariable int athleteId) {
-        List<TrainingDto> trainings = trainingService.findByAthleteId(athleteId);
-        return ResponseEntity.ok(trainings);
+    public ResponseEntity<?> getTrainingsForAthlete(@PathVariable int athleteId) {
+        try {
+            List<TrainingDto> trainings = trainingService.findByAthleteId(athleteId);
+            log.info("Retrieved {} trainings for athlete {}", trainings.size(), athleteId);
+            return ResponseEntity.ok(trainings);
+        } catch (Exception e) {
+            log.error("Error retrieving trainings for athlete {}", athleteId, e);
+            ErrorResponse error = new ErrorResponse(
+                HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                "Internal Server Error",
+                "Fehler beim Abrufen der Trainings für Athlet " + athleteId + ": " + e.getMessage(),
+                "/api/trainings/athlete/" + athleteId
+            );
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
+        }
     }
     
     /**
@@ -45,12 +58,35 @@ public class TrainingController {
      * Gibt ein bestimmtes Training eines Athleten zurück
      */
     @GetMapping("/athlete/{athleteId}/training/{trainingId}")
-    public ResponseEntity<TrainingDto> getTrainingForAthlete(
+    public ResponseEntity<?> getTrainingForAthlete(
             @PathVariable int athleteId,
             @PathVariable int trainingId) {
-        return trainingService.findByAthleteIdAndTrainingId(athleteId, trainingId)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+        try {
+            return trainingService.findByAthleteIdAndTrainingId(athleteId, trainingId)
+                    .map(training -> {
+                        log.info("Retrieved training {} for athlete {}", trainingId, athleteId);
+                        return ResponseEntity.ok((Object) training);
+                    })
+                    .orElseGet(() -> {
+                        log.warn("Training {} for athlete {} not found", trainingId, athleteId);
+                        ErrorResponse error = new ErrorResponse(
+                            HttpStatus.NOT_FOUND.value(),
+                            "Not Found",
+                            "Training mit ID " + trainingId + " für Athlet " + athleteId + " wurde nicht gefunden",
+                            "/api/trainings/athlete/" + athleteId + "/training/" + trainingId
+                        );
+                        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
+                    });
+        } catch (Exception e) {
+            log.error("Error retrieving training {} for athlete {}", trainingId, athleteId, e);
+            ErrorResponse error = new ErrorResponse(
+                HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                "Internal Server Error",
+                "Fehler beim Abrufen des Trainings: " + e.getMessage(),
+                "/api/trainings/athlete/" + athleteId + "/training/" + trainingId
+            );
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
+        }
     }
     
     /**
@@ -58,14 +94,61 @@ public class TrainingController {
      * Erstellt ein neues Training für einen Athleten
      */
     @PostMapping("/athlete/{athleteId}")
-    public ResponseEntity<TrainingDto> createTrainingForAthlete(
+    public ResponseEntity<?> createTrainingForAthlete(
             @PathVariable int athleteId,
             @RequestBody CreateTrainingDto dto) {
         try {
+            if (dto.getSportId() <= 0) {
+                ErrorResponse error = new ErrorResponse(
+                    HttpStatus.BAD_REQUEST.value(),
+                    "Bad Request",
+                    "Ungültige Sportart-ID",
+                    "/api/trainings/athlete/" + athleteId
+                );
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+            }
+            
+            if (dto.getDate() == null) {
+                ErrorResponse error = new ErrorResponse(
+                    HttpStatus.BAD_REQUEST.value(),
+                    "Bad Request",
+                    "Das Trainingsdatum darf nicht leer sein",
+                    "/api/trainings/athlete/" + athleteId
+                );
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+            }
+            
+            if (dto.getMetric() <= 0) {
+                ErrorResponse error = new ErrorResponse(
+                    HttpStatus.BAD_REQUEST.value(),
+                    "Bad Request",
+                    "Der Metrikwert muss größer als 0 sein",
+                    "/api/trainings/athlete/" + athleteId
+                );
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+            }
+            
             TrainingDto created = trainingService.createForAthlete(athleteId, dto);
+            log.info("Created training {} for athlete {}", created.getId(), athleteId);
             return ResponseEntity.status(HttpStatus.CREATED).body(created);
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().build();
+            log.warn("Invalid data for creating training for athlete {}: {}", athleteId, e.getMessage());
+            ErrorResponse error = new ErrorResponse(
+                HttpStatus.BAD_REQUEST.value(),
+                "Bad Request",
+                "Ungültige Daten: " + e.getMessage(),
+                "/api/trainings/athlete/" + athleteId
+            );
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+        } catch (Exception e) {
+            log.error("Error creating training for athlete {}", athleteId, e);
+            ErrorResponse error = new ErrorResponse(
+                HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                "Internal Server Error",
+                "Fehler beim Erstellen des Trainings: " + e.getMessage(),
+                "/api/trainings/athlete/" + athleteId
+            );
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
         }
     }
     
@@ -74,16 +157,64 @@ public class TrainingController {
      * Aktualisiert ein Training eines Athleten
      */
     @PutMapping("/athlete/{athleteId}/training/{trainingId}")
-    public ResponseEntity<TrainingDto> updateTrainingForAthlete(
+    public ResponseEntity<?> updateTrainingForAthlete(
             @PathVariable int athleteId,
             @PathVariable int trainingId,
             @RequestBody UpdateTrainingDto dto) {
         try {
+            if (dto.getSportId() <= 0) {
+                ErrorResponse error = new ErrorResponse(
+                    HttpStatus.BAD_REQUEST.value(),
+                    "Bad Request",
+                    "Ungültige Sportart-ID",
+                    "/api/trainings/athlete/" + athleteId + "/training/" + trainingId
+                );
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+            }
+            
+            if (dto.getMetric() <= 0) {
+                ErrorResponse error = new ErrorResponse(
+                    HttpStatus.BAD_REQUEST.value(),
+                    "Bad Request",
+                    "Der Metrikwert muss größer als 0 sein",
+                    "/api/trainings/athlete/" + athleteId + "/training/" + trainingId
+                );
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+            }
+            
             return trainingService.updateForAthlete(athleteId, trainingId, dto)
-                    .map(ResponseEntity::ok)
-                    .orElse(ResponseEntity.notFound().build());
+                    .map(training -> {
+                        log.info("Updated training {} for athlete {}", trainingId, athleteId);
+                        return ResponseEntity.ok((Object) training);
+                    })
+                    .orElseGet(() -> {
+                        log.warn("Training {} for athlete {} not found for update", trainingId, athleteId);
+                        ErrorResponse error = new ErrorResponse(
+                            HttpStatus.NOT_FOUND.value(),
+                            "Not Found",
+                            "Training mit ID " + trainingId + " für Athlet " + athleteId + " wurde nicht gefunden und kann nicht aktualisiert werden",
+                            "/api/trainings/athlete/" + athleteId + "/training/" + trainingId
+                        );
+                        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
+                    });
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().build();
+            log.warn("Invalid data for updating training {} for athlete {}: {}", trainingId, athleteId, e.getMessage());
+            ErrorResponse error = new ErrorResponse(
+                HttpStatus.BAD_REQUEST.value(),
+                "Bad Request",
+                "Ungültige Daten: " + e.getMessage(),
+                "/api/trainings/athlete/" + athleteId + "/training/" + trainingId
+            );
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+        } catch (Exception e) {
+            log.error("Error updating training {} for athlete {}", trainingId, athleteId, e);
+            ErrorResponse error = new ErrorResponse(
+                HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                "Internal Server Error",
+                "Fehler beim Aktualisieren des Trainings: " + e.getMessage(),
+                "/api/trainings/athlete/" + athleteId + "/training/" + trainingId
+            );
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
         }
     }
 
@@ -92,16 +223,36 @@ public class TrainingController {
      * Löscht ein Training eines Athleten
      */
     @DeleteMapping("/athlete/{athleteId}/training/{trainingId}")
-    public ResponseEntity<Void> deleteTrainingForAthlete(
+    public ResponseEntity<?> deleteTrainingForAthlete(
             @PathVariable int athleteId,
             @PathVariable int trainingId) {
-        
-        return trainingService.findByAthleteIdAndTrainingId(athleteId, trainingId)
-                .map(training -> {
-                    trainingService.delete(trainingId);
-                    return ResponseEntity.noContent().<Void>build();
-                })
-                .orElse(ResponseEntity.notFound().build());
+        try {
+            return trainingService.findByAthleteIdAndTrainingId(athleteId, trainingId)
+                    .map(training -> {
+                        trainingService.delete(trainingId);
+                        log.info("Deleted training {} for athlete {}", trainingId, athleteId);
+                        return ResponseEntity.noContent().<Object>build();
+                    })
+                    .orElseGet(() -> {
+                        log.warn("Training {} for athlete {} not found for deletion", trainingId, athleteId);
+                        ErrorResponse error = new ErrorResponse(
+                            HttpStatus.NOT_FOUND.value(),
+                            "Not Found",
+                            "Training mit ID " + trainingId + " für Athlet " + athleteId + " wurde nicht gefunden und kann nicht gelöscht werden",
+                            "/api/trainings/athlete/" + athleteId + "/training/" + trainingId
+                        );
+                        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
+                    });
+        } catch (Exception e) {
+            log.error("Error deleting training {} for athlete {}", trainingId, athleteId, e);
+            ErrorResponse error = new ErrorResponse(
+                HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                "Internal Server Error",
+                "Fehler beim Löschen des Trainings: " + e.getMessage(),
+                "/api/trainings/athlete/" + athleteId + "/training/" + trainingId
+            );
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
+        }
     }
     
     /**
@@ -109,8 +260,20 @@ public class TrainingController {
      * Gibt alle Trainings zurück (Optional - für Übersicht)
      */
     @GetMapping
-    public ResponseEntity<List<TrainingDto>> getAllTrainings() {
-        List<TrainingDto> trainings = trainingService.findAll();
-        return ResponseEntity.ok(trainings);
+    public ResponseEntity<?> getAllTrainings() {
+        try {
+            List<TrainingDto> trainings = trainingService.findAll();
+            log.info("Retrieved {} trainings", trainings.size());
+            return ResponseEntity.ok(trainings);
+        } catch (Exception e) {
+            log.error("Error retrieving all trainings", e);
+            ErrorResponse error = new ErrorResponse(
+                HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                "Internal Server Error",
+                "Fehler beim Abrufen aller Trainings: " + e.getMessage(),
+                "/api/trainings"
+            );
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
+        }
     }
 }

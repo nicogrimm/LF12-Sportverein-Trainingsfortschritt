@@ -75,6 +75,30 @@ DELETE http://localhost:8080/api/test-data/clear
 
 ## API-Endpoints
 
+### Error Handling
+
+Alle Endpoints geben bei Fehlern ein strukturiertes Error-Response-Objekt zurück:
+
+```json
+{
+  "timestamp": "2026-01-23T10:30:00",
+  "status": 404,
+  "error": "Not Found",
+  "message": "Athlet mit ID 999 wurde nicht gefunden",
+  "path": "/api/athletes/999"
+}
+```
+
+**Mögliche HTTP-Status-Codes:**
+- `200 OK` - Erfolgreiche Anfrage
+- `201 Created` - Ressource erfolgreich erstellt
+- `204 No Content` - Erfolgreiche Löschung (kein Body)
+- `400 Bad Request` - Ungültige Eingabedaten
+- `404 Not Found` - Ressource nicht gefunden
+- `500 Internal Server Error` - Serverfehler
+
+---
+
 ### Athleten
 
 #### Alle Athleten abrufen
@@ -82,7 +106,7 @@ DELETE http://localhost:8080/api/test-data/clear
 GET /api/athletes
 ```
 
-**Antwort:** `200 OK`
+**Erfolgreiche Antwort:** `200 OK`
 ```json
 [
   {
@@ -93,17 +117,39 @@ GET /api/athletes
 ]
 ```
 
+**Fehler-Antwort:** `500 Internal Server Error`
+```json
+{
+  "timestamp": "2026-01-23T10:30:00",
+  "status": 500,
+  "error": "Internal Server Error",
+  "message": "Fehler beim Abrufen der Athleten: ...",
+  "path": "/api/athletes"
+}
+```
+
 #### Einen Athleten abrufen
 ```http
 GET /api/athletes/{id}
 ```
 
-**Antwort:** `200 OK` oder `404 Not Found`
+**Erfolgreiche Antwort:** `200 OK`
 ```json
 {
   "athleteId": 1,
   "firstname": "Max",
   "name": "Mustermann"
+}
+```
+
+**Fehler-Antwort:** `404 Not Found`
+```json
+{
+  "timestamp": "2026-01-23T10:30:00",
+  "status": 404,
+  "error": "Not Found",
+  "message": "Athlet mit ID 999 wurde nicht gefunden",
+  "path": "/api/athletes/999"
 }
 ```
 
@@ -118,12 +164,23 @@ Content-Type: application/json
 }
 ```
 
-**Antwort:** `201 Created`
+**Erfolgreiche Antwort:** `201 Created`
 ```json
 {
   "athleteId": 1,
   "firstname": "Max",
   "name": "Mustermann"
+}
+```
+
+**Fehler-Antwort (fehlende Daten):** `400 Bad Request`
+```json
+{
+  "timestamp": "2026-01-23T10:30:00",
+  "status": 400,
+  "error": "Bad Request",
+  "message": "Der Vorname des Athleten darf nicht leer sein",
+  "path": "/api/athletes"
 }
 ```
 
@@ -138,14 +195,16 @@ Content-Type: application/json
 }
 ```
 
-**Antwort:** `200 OK` oder `404 Not Found`
+**Erfolgreiche Antwort:** `200 OK`
+**Fehler-Antwort:** `404 Not Found` oder `400 Bad Request`
 
 #### Athleten löschen
 ```http
 DELETE /api/athletes/{id}
 ```
 
-**Antwort:** `204 No Content` oder `404 Not Found`
+**Erfolgreiche Antwort:** `204 No Content`
+**Fehler-Antwort:** `404 Not Found`
 
 ---
 
@@ -156,7 +215,7 @@ DELETE /api/athletes/{id}
 GET /api/sports
 ```
 
-**Antwort:** `200 OK`
+**Erfolgreiche Antwort:** `200 OK`
 ```json
 [
   {
@@ -172,12 +231,23 @@ GET /api/sports
 GET /api/sports/{id}
 ```
 
-**Antwort:** `200 OK` oder `404 Not Found`
+**Erfolgreiche Antwort:** `200 OK`
 ```json
 {
   "sportId": 1,
   "name": "Laufen",
   "unit": "km"
+}
+```
+
+**Fehler-Antwort:** `404 Not Found`
+```json
+{
+  "timestamp": "2026-01-23T10:30:00",
+  "status": 404,
+  "error": "Not Found",
+  "message": "Sportart mit ID 999 wurde nicht gefunden",
+  "path": "/api/sports/999"
 }
 ```
 
@@ -192,12 +262,23 @@ Content-Type: application/json
 }
 ```
 
-**Antwort:** `201 Created`
+**Erfolgreiche Antwort:** `201 Created`
 ```json
 {
   "sportId": 1,
   "name": "Laufen",
   "unit": "km"
+}
+```
+
+**Fehler-Antwort (fehlende Daten):** `400 Bad Request`
+```json
+{
+  "timestamp": "2026-01-23T10:30:00",
+  "status": 400,
+  "error": "Bad Request",
+  "message": "Der Name der Sportart darf nicht leer sein",
+  "path": "/api/sports"
 }
 ```
 
@@ -212,14 +293,16 @@ Content-Type: application/json
 }
 ```
 
-**Antwort:** `200 OK` oder `404 Not Found`
+**Erfolgreiche Antwort:** `200 OK`
+**Fehler-Antwort:** `404 Not Found` oder `400 Bad Request`
 
 #### Sportart löschen
 ```http
 DELETE /api/sports/{id}
 ```
 
-**Antwort:** `204 No Content` oder `404 Not Found`
+**Erfolgreiche Antwort:** `204 No Content`
+**Fehler-Antwort:** `404 Not Found`
 
 ---
 
@@ -230,7 +313,7 @@ DELETE /api/sports/{id}
 GET /api/trainings
 ```
 
-**Antwort:** `200 OK`
+**Erfolgreiche Antwort:** `200 OK`
 ```json
 [
   {
@@ -248,7 +331,7 @@ GET /api/trainings
 GET /api/trainings/athlete/{athleteId}
 ```
 
-**Antwort:** `200 OK`
+**Erfolgreiche Antwort:** `200 OK`
 ```json
 [
   {
@@ -266,7 +349,7 @@ GET /api/trainings/athlete/{athleteId}
 GET /api/trainings/athlete/{athleteId}/training/{trainingId}
 ```
 
-**Antwort:** `200 OK` oder `404 Not Found`
+**Erfolgreiche Antwort:** `200 OK`
 ```json
 {
   "trainingId": 1,
@@ -274,6 +357,17 @@ GET /api/trainings/athlete/{athleteId}/training/{trainingId}
   "sportId": 1,
   "date": "2026-01-15T08:00:00+01:00",
   "metric": 5.5
+}
+```
+
+**Fehler-Antwort:** `404 Not Found`
+```json
+{
+  "timestamp": "2026-01-23T10:30:00",
+  "status": 404,
+  "error": "Not Found",
+  "message": "Training mit ID 999 für Athlet 1 wurde nicht gefunden",
+  "path": "/api/trainings/athlete/1/training/999"
 }
 ```
 
@@ -289,7 +383,7 @@ Content-Type: application/json
 }
 ```
 
-**Antwort:** `201 Created` oder `400 Bad Request`
+**Erfolgreiche Antwort:** `201 Created`
 ```json
 {
   "trainingId": 7,
@@ -297,6 +391,17 @@ Content-Type: application/json
   "sportId": 1,
   "date": "2026-01-22T10:00:00+01:00",
   "metric": 7.5
+}
+```
+
+**Fehler-Antwort (ungültige Daten):** `400 Bad Request`
+```json
+{
+  "timestamp": "2026-01-23T10:30:00",
+  "status": 400,
+  "error": "Bad Request",
+  "message": "Der Metrikwert muss größer als 0 sein",
+  "path": "/api/trainings/athlete/1"
 }
 ```
 
@@ -312,14 +417,16 @@ Content-Type: application/json
 }
 ```
 
-**Antwort:** `200 OK`, `404 Not Found` oder `400 Bad Request`
+**Erfolgreiche Antwort:** `200 OK`
+**Fehler-Antwort:** `404 Not Found` oder `400 Bad Request`
 
 #### Training eines Athleten löschen
 ```http
 DELETE /api/trainings/athlete/{athleteId}/training/{trainingId}
 ```
 
-**Antwort:** `204 No Content` oder `404 Not Found`
+**Erfolgreiche Antwort:** `204 No Content`
+**Fehler-Antwort:** `404 Not Found`
 
 ---
 
