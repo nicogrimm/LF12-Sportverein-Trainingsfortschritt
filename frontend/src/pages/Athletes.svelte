@@ -4,13 +4,11 @@ import RefreshCwIcon from "@lucide/svelte/icons/refresh-cw";
 import {
   type ColumnDef,
   type ColumnFiltersState,
-  type PaginationState,
   type RowSelectionState,
   type SortingState,
   type VisibilityState,
   getCoreRowModel,
   getFilteredRowModel,
-  getPaginationRowModel,
   getSortedRowModel,
 } from "@tanstack/table-core";
 import { createRawSnippet } from "svelte";
@@ -46,6 +44,7 @@ async function loadData() {
 }
 
 async function refreshData() {
+  clearAlerts();
   promise = loadData();
 }
 
@@ -348,28 +347,28 @@ const table = createSvelteTable({
         </Table.Root>
       </div>
       <!-- <div class="flex items-center justify-end space-x-2 pt-4"> -->
-        <!-- <div class="flex-1 text-sm text-muted-foreground"> -->
-        <!--   {table.getFilteredSelectedRowModel().rows.length} von -->
-        <!--   {table.getFilteredRowModel().rows.length} Zeile(n) ausgewählt. -->
-        <!-- </div> -->
-        <!-- <div class="space-x-2"> -->
-        <!--   <Button -->
-        <!--     variant="outline" -->
-        <!--     size="sm" -->
-        <!--     onclick={() => table.previousPage()} -->
-        <!--     disabled={!table.getCanPreviousPage()} -->
-        <!--   > -->
-        <!--     Zurück -->
-        <!--   </Button> -->
-        <!--   <Button -->
-        <!--     variant="outline" -->
-        <!--     size="sm" -->
-        <!--     onclick={() => table.nextPage()} -->
-        <!--     disabled={!table.getCanNextPage()} -->
-        <!--   > -->
-        <!--     Weiter -->
-        <!--   </Button> -->
-        <!-- </div> -->
+      <!-- <div class="flex-1 text-sm text-muted-foreground"> -->
+      <!--   {table.getFilteredSelectedRowModel().rows.length} von -->
+      <!--   {table.getFilteredRowModel().rows.length} Zeile(n) ausgewählt. -->
+      <!-- </div> -->
+      <!-- <div class="space-x-2"> -->
+      <!--   <Button -->
+      <!--     variant="outline" -->
+      <!--     size="sm" -->
+      <!--     onclick={() => table.previousPage()} -->
+      <!--     disabled={!table.getCanPreviousPage()} -->
+      <!--   > -->
+      <!--     Zurück -->
+      <!--   </Button> -->
+      <!--   <Button -->
+      <!--     variant="outline" -->
+      <!--     size="sm" -->
+      <!--     onclick={() => table.nextPage()} -->
+      <!--     disabled={!table.getCanNextPage()} -->
+      <!--   > -->
+      <!--     Weiter -->
+      <!--   </Button> -->
+      <!-- </div> -->
       <!-- </div> -->
     </div>
   {/await}
