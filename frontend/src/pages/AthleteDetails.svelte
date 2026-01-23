@@ -21,6 +21,8 @@ let editDialogOpened = $state(false);
 let editAthleteFormRef: HTMLFormElement | null = $state(null);
 let deleteDialogOpen = $state(false);
 
+let trainingsTablesDialogOpened = $state(false);
+
 async function loadData() {
   try {
     if ($location.page !== "athlete-details") {
@@ -98,7 +100,7 @@ async function submitUpdate(event: SubmitEvent) {
       <Button class="w-fit" onclick={() => window.history.back()}>Zurück</Button
       >
 
-      {#if !editDialogOpened}
+      {#if !editDialogOpened && !trainingsTablesDialogOpened}
         <Alertbox />
       {/if}
 
@@ -187,7 +189,7 @@ async function submitUpdate(event: SubmitEvent) {
       </div>
 
       {#if data?.id}
-        <TrainingsTable variant="athlet" parentId={data.id} />
+        <TrainingsTable variant="athlet" parentId={data.id} bind:dialogOpened={trainingsTablesDialogOpened} />
       {/if}
     </div>
   {/await}

@@ -35,24 +35,31 @@ import { Label } from "$lib/components/ui/label";
 import { getErrorMessage } from "$lib/service/fetchUtils";
 import { trainingService, type Training } from "$lib/service/trainingService";
 
-let { variant, parentId }: { variant: "sport" | "athlet"; parentId: number } =
-  $props();
+let {
+  variant,
+  parentId,
+  dialogOpened = $bindable(),
+}: {
+  variant: "sport" | "athlet";
+  parentId: number;
+  dialogOpened: boolean;
+} = $props();
 
 let data: Training[] = [];
 let promise = $state(loadData());
 
 async function loadData() {
   try {
-  switch (variant) {
-  case "sport":
-    return await trainingService
-      .getTrainingsForSport(parentId)
-      .then((list) => (data = list));
-  case "athlet":
-    return await trainingService
-      .getTrainingsForAthlete(parentId)
-      .then((list) => (data = list));
-  }
+    switch (variant) {
+      case "sport":
+        return await trainingService
+          .getTrainingsForSport(parentId)
+          .then((list) => (data = list));
+      case "athlet":
+        return await trainingService
+          .getTrainingsForAthlete(parentId)
+          .then((list) => (data = list));
+    }
   } catch (err) {
     console.error(err);
     addAlert({
@@ -71,7 +78,7 @@ let addTrainingDialogOpened = $state(false);
 let addTrainingFormRef: HTMLFormElement | null = $state(null);
 
 $effect(() => {
-  void addTrainingDialogOpened; // run if this changes
+  dialogOpened = addTrainingDialogOpened;
   clearAlerts();
 });
 
@@ -363,16 +370,16 @@ $effect(() => {
   {:then}
     <div class="-mb-8 w-full">
       <div class="flex items-center gap-4 py-4">
-   <!--      <Input -->
-   <!--        placeholder="Filter nach Namen..." -->
-   <!--        value={(table?.getColumn("name")?.getFilterValue() as string) ?? ""} -->
-   <!--        oninput={(e) => -->
-   <!--  table?.getColumn("name")?.setFilterValue(e.currentTarget.value)} -->
-   <!--        onchange={(e) => { -->
-   <!--  table?.getColumn("name")?.setFilterValue(e.currentTarget.value); -->
-   <!-- }} -->
-   <!--        class="max-w-sm" -->
-   <!--      /> -->
+        <!--      <Input -->
+        <!--        placeholder="Filter nach Namen..." -->
+        <!--        value={(table?.getColumn("name")?.getFilterValue() as string) ?? ""} -->
+        <!--        oninput={(e) => -->
+        <!--  table?.getColumn("name")?.setFilterValue(e.currentTarget.value)} -->
+        <!--        onchange={(e) => { -->
+        <!--  table?.getColumn("name")?.setFilterValue(e.currentTarget.value); -->
+        <!-- }} -->
+        <!--        class="max-w-sm" -->
+        <!--      /> -->
 
         {#if variant == "athlet"}
           <Dialog.Root bind:open={addTrainingDialogOpened}>
