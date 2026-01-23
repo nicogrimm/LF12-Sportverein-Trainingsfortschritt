@@ -154,6 +154,7 @@ const columns: ColumnDef<Sport>[] = [
     },
   },
   {
+    id: "name",
     accessorKey: "name",
     header: ({ column }) =>
       renderComponent(DataTableButton, {
@@ -174,6 +175,7 @@ const columns: ColumnDef<Sport>[] = [
     },
   },
   {
+    id: "einheit",
     accessorKey: "unit",
     header: ({ column }) =>
       renderComponent(DataTableButton, {
