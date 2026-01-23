@@ -24,7 +24,9 @@ import {
 } from "$lib/components/ui/data-table/index.js";
 import DataTableButton from "$lib/components/DataTableButton.svelte";
 import DataTableActions from "$lib/components/DataTableActions.svelte";
+import DataTableCheckbox from "$lib/components/DataTableCheckbox.svelte";
 import { athleteService, type Athlete } from "$lib/service/athleteService";
+import * as AlertDialog from "$lib/components/ui/alert-dialog";
 import Loading from "$lib/components/Loading.svelte";
 import Alertbox from "$lib/components/Alertbox.svelte";
 import { addAlert, clearAlerts } from "$lib/alerts";
@@ -80,27 +82,38 @@ async function submitAdd(event: SubmitEvent) {
   refreshData();
 }
 
+async function handleDelete() {
+  for (let i = 0; i < data.length; i++) {
+    if (rowSelection[i]) {
+      await athleteService.deleteAthlete(data[i].id);
+    }
+  }
+  rowSelection = {};
+
+  refreshData();
+}
+
 const columns: ColumnDef<Athlete>[] = [
-  // {
-  //  id: "select",
-  //  header: ({ table }) =>
-  //   renderComponent(DataTableCheckbox, {
-  //    checked: table.getIsAllPageRowsSelected(),
-  //    indeterminate:
-  //     table.getIsSomePageRowsSelected() &&
-  //     !table.getIsAllPageRowsSelected(),
-  //    onCheckedChange: (value) => table.toggleAllPageRowsSelected(!!value),
-  //    "aria-label": "Select all"
-  //   }),
-  //  cell: ({ row }) =>
-  //   renderComponent(DataTableCheckbox, {
-  //    checked: row.getIsSelected(),
-  //    onCheckedChange: (value) => row.toggleSelected(!!value),
-  //    "aria-label": "Select row"
-  //   }),
-  //  enableSorting: false,
-  //  enableHiding: false
-  // },
+  {
+    id: "select",
+    header: ({ table }) =>
+      renderComponent(DataTableCheckbox, {
+        checked: table.getIsAllPageRowsSelected(),
+        indeterminate:
+          table.getIsSomePageRowsSelected() &&
+          !table.getIsAllPageRowsSelected(),
+        onCheckedChange: (value) => table.toggleAllPageRowsSelected(!!value),
+        "aria-label": "Select all",
+      }),
+    cell: ({ row }) =>
+      renderComponent(DataTableCheckbox, {
+        checked: row.getIsSelected(),
+        onCheckedChange: (value) => row.toggleSelected(!!value),
+        "aria-label": "Select row",
+      }),
+    enableSorting: false,
+    enableHiding: false,
+  },
   {
     accessorKey: "id",
     header: ({ column }) =>
@@ -370,6 +383,32 @@ const table = createSvelteTable({
       <!--   </Button> -->
       <!-- </div> -->
       <!-- </div> -->
+      <div class="flex items-center justify-end space-x-2 pt-4">
+        <AlertDialog.Root>
+          <AlertDialog.Trigger
+            class={buttonVariants({ variant: "destructive" })}
+            disabled={Object.keys(rowSelection).length == 0}
+          >
+            Auswahl löschen
+          </AlertDialog.Trigger>
+          <AlertDialog.Content>
+            <AlertDialog.Header>
+              <AlertDialog.Title>Bist du dir sicher?</AlertDialog.Title>
+              <AlertDialog.Description>
+                Diese Aktion kann nicht rückgängig gemacht werden.
+              </AlertDialog.Description>
+            </AlertDialog.Header>
+            <AlertDialog.Footer>
+              <AlertDialog.Cancel>Abbrechen</AlertDialog.Cancel>
+              <AlertDialog.Action
+                onclick={handleDelete}
+                class={buttonVariants({ variant: "destructive" })}
+                >Weiter</AlertDialog.Action
+              >
+            </AlertDialog.Footer>
+          </AlertDialog.Content>
+        </AlertDialog.Root>
+      </div>
     </div>
   {/await}
 </main>
