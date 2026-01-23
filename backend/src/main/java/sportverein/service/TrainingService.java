@@ -43,6 +43,15 @@ public class TrainingService {
                 .map(this::convertToDto)
                 .collect(Collectors.toList());
     }
+
+    /**
+     * Gibt alle Trainings eines Sports zurück
+     */
+    public List<TrainingDto> findBySportId(int sportId) {
+        return trainingRepository.findBySportId(sportId).stream()
+                .map(this::convertToDto)
+                .collect(Collectors.toList());
+    }
     
     /**
      * Gibt ein Training anhand der ID zurück

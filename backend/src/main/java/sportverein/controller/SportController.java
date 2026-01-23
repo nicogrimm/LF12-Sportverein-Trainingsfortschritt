@@ -192,11 +192,8 @@ public class SportController {
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteSport(@PathVariable int id) {
         try {
-            boolean deleted = sportService.delete(id);
-            if (deleted) {
-                log.info("Deleted sport with id {}", id);
-                return ResponseEntity.noContent().build();
-            } else {
+            // Prüfen ob die Sportart existiert
+            if (!sportService.findById(id).isPresent()) {
                 log.warn("Sport with id {} not found for deletion", id);
                 ErrorResponse error = new ErrorResponse(
                     HttpStatus.NOT_FOUND.value(),
@@ -206,6 +203,21 @@ public class SportController {
                 );
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
             }
+
+            // Versuchen zu löschen
+            sportService.delete(id);
+            log.info("Deleted sport with id {}", id);
+            return ResponseEntity.noContent().build();
+            
+        } catch (org.springframework.dao.DataIntegrityViolationException e) {
+            log.warn("Sport with id {} could not be deleted due to data integrity constraints", id, e);
+            ErrorResponse error = new ErrorResponse(
+                HttpStatus.CONFLICT.value(),
+                "Conflict",
+                "Sportart mit ID " + id + " konnte nicht gelöscht werden. Möglicherweise existieren noch verknüpfte Trainings",
+                "/api/sports/" + id
+            );
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
         } catch (Exception e) {
             log.error("Error deleting sport with id {}", id, e);
             ErrorResponse error = new ErrorResponse(

@@ -54,6 +54,28 @@ public class TrainingController {
     }
     
     /**
+     * GET /api/trainings/sport/{sportId}
+     * Gibt alle Trainings einer Sportart zurück
+     */
+    @GetMapping("/sport/{sportId}")
+    public ResponseEntity<?> getTrainingsForSport(@PathVariable int sportId) {
+        try {
+            List<TrainingDto> trainings = trainingService.findBySportId(sportId);
+            log.info("Retrieved {} trainings for sport {}", trainings.size(), sportId);
+            return ResponseEntity.ok(trainings);
+        } catch (Exception e) {
+            log.error("Error retrieving trainings for sport {}", sportId, e);
+            ErrorResponse error = new ErrorResponse(
+                HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                "Internal Server Error",
+                "Fehler beim Abrufen der Trainings für Sport " + sportId + ": " + e.getMessage(),
+                "/api/trainings/sport/" + sportId
+            );
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
+        }
+    }
+    
+    /**
      * GET /api/trainings/athlete/{athleteId}/training/{trainingId}
      * Gibt ein bestimmtes Training eines Athleten zurück
      */
