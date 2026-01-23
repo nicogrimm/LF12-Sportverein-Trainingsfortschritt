@@ -43,9 +43,16 @@ let promise = $state(loadData());
 
 async function loadData() {
   try {
+  switch (variant) {
+  case "sport":
     return await trainingService
-      .getTrainingsForAthlete(1)
+      .getTrainingsForSport(parentId)
       .then((list) => (data = list));
+  case "athlet":
+    return await trainingService
+      .getTrainingsForAthlete(parentId)
+      .then((list) => (data = list));
+  }
   } catch (err) {
     console.error(err);
     addAlert({
