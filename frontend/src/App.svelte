@@ -20,9 +20,6 @@ async function loadPage(location: Location) {
     case "sport-details":
       Page = await import("./pages/SportDetails.svelte");
       break;
-    case "test2":
-      Page = await import("./pages/Test2.svelte");
-      break;
   }
   return Page.default;
 }

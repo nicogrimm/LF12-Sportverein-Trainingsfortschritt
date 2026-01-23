@@ -11,7 +11,7 @@ export type Location =
     sportId: number;
   }
   | {
-    page: "sports" | "athletes" | "test2";
+    page: "sports" | "athletes";
   };
 
 export const location = writable<Location>(readLocation());
@@ -58,8 +58,6 @@ function readLocation(): Location {
       }
 
       return { page: "sports" };
-    case "test2":
-      return { page: "test2" };
   }
 
   return { page: "athletes" };
@@ -88,10 +86,6 @@ export function switchLocation(newLocation: Location) {
       break;
     case "sports":
       url.pathname = "/sports";
-      window.history.pushState({}, "", url.toString());
-      break;
-    case "test2":
-      url.pathname = "/test2";
       window.history.pushState({}, "", url.toString());
       break;
   }
