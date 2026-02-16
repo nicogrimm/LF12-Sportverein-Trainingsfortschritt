@@ -101,9 +101,8 @@ async function submitAdd(event: SubmitEvent) {
   try {
     await trainingService.createTrainingForAthlete({
       athleteId: parentId,
-      // TODO: sportId and date should be dropdowns
       sportId: parseInt(data.get("sportId")!.toString()),
-      date: data.get("date")!.toString(),
+      date: data.get("date") ? new Date(data.get("date")!.toString()).toISOString() : "",
       metric: parseInt(data.get("metric")!.toString()),
     });
   } catch (e) {
@@ -249,18 +248,18 @@ const columns: ColumnDef<Training>[] = $derived([
         onclick: column.getToggleSortingHandler(),
       }),
     cell: ({ row }) => {
-      const metricSnippet = createRawSnippet<[{ metric: number, sport: Sport }]>(
-        (getData) => {
-          const { metric, sport } = getData();
-          return {
-            render: () => `<div>${metric} ${sport.unit}</div>`,
-          };
-        },
-      );
+      const metricSnippet = createRawSnippet<
+        [{ metric: number; sport: Sport }]
+      >((getData) => {
+        const { metric, sport } = getData();
+        return {
+          render: () => `<div>${metric} ${sport.unit}</div>`,
+        };
+      });
 
       return renderSnippet(metricSnippet, {
         metric: row.original.metric,
-        sport: sports[row.original.sportId]
+        sport: sports[row.original.sportId],
       });
     },
   },
@@ -408,13 +407,28 @@ $effect(() => {
               >
                 <Alertbox />
                 <div class="grid gap-4">
+                  <!-- private int trainingId; -->
+                  <!-- private int athleteId; -->
+                  <!-- private int sportId; -->
+                  <!-- private OffsetDateTime date; -->
+                  <!-- private Float metric; -->
                   <div class="grid gap-3">
-                    <Label for="firstname-1">Vorname</Label>
-                    <Input id="firstname-1" name="firstname" />
+                    <!-- TODO: show name instead of id -->
+                    <Label for="firstname-1">Athlet</Label>
+                    <Input id="firstname-1" name="athleteId" type="number" value={parentId} disabled />
                   </div>
                   <div class="grid gap-3">
-                    <Label for="name-1">Nachname</Label>
-                    <Input id="name-1" name="name" />
+                    <!-- TODO: select from existing data and show resulting unit -->
+                    <Label for="name-1">Sportart</Label>
+                    <Input id="name-1" name="sportId" type="number" required />
+                  </div>
+                  <div class="grid gap-3">
+                    <Label for="name-1">Datum</Label>
+                    <Input id="name-1" name="date" type="datetime-local" required />
+                  </div>
+                  <div class="grid gap-3">
+                    <Label for="name-1">Metrik</Label>
+                    <Input id="name-1" name="metric" type="number" step="any" required />
                   </div>
                 </div>
                 <Dialog.Footer>
