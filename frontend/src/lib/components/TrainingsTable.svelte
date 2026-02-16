@@ -35,6 +35,7 @@ import { Label } from "$lib/components/ui/label";
 import { getErrorMessage } from "$lib/service/fetchUtils";
 import { trainingService, type Training } from "$lib/service/trainingService";
 import { sportService, type Sport } from "$lib/service/sportService";
+import { formatDateToInputFieldFormat } from "$lib/utils";
 
 let {
   variant,
@@ -415,7 +416,13 @@ $effect(() => {
                   <div class="grid gap-3">
                     <!-- TODO: show name instead of id -->
                     <Label for="firstname-1">Athlet</Label>
-                    <Input id="firstname-1" name="athleteId" type="number" value={parentId} disabled />
+                    <Input
+                      id="firstname-1"
+                      name="athleteId"
+                      type="number"
+                      value={parentId}
+                      disabled
+                    />
                   </div>
                   <div class="grid gap-3">
                     <!-- TODO: select from existing data and show resulting unit -->
@@ -424,11 +431,23 @@ $effect(() => {
                   </div>
                   <div class="grid gap-3">
                     <Label for="name-1">Datum</Label>
-                    <Input id="name-1" name="date" type="datetime-local" required />
+                    <Input
+                      id="name-1"
+                      name="date"
+                      type="datetime-local"
+                      required
+                      value={formatDateToInputFieldFormat(new Date())}
+                    />
                   </div>
                   <div class="grid gap-3">
                     <Label for="name-1">Metrik</Label>
-                    <Input id="name-1" name="metric" type="number" step="any" required />
+                    <Input
+                      id="name-1"
+                      name="metric"
+                      type="number"
+                      step="any"
+                      required
+                    />
                   </div>
                 </div>
                 <Dialog.Footer>
