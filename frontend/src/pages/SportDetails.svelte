@@ -186,7 +186,8 @@ async function submitUpdate(event: SubmitEvent) {
     </div>
 
     {#if data?.id}
-      <TrainingsTable variant="sport" parentId={data.id} />
+      <h3 class="mt-8 text-lg font-bold">Trainings</h3>
+      <TrainingsTable variant="sport" parentId={data.id} dialogOpened={false} />
     {/if}
   {/await}
 </main>
