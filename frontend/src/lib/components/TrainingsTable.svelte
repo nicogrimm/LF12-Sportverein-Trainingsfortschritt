@@ -34,6 +34,7 @@ import * as Dialog from "$lib/components/ui/dialog";
 import { Label } from "$lib/components/ui/label";
 import { getErrorMessage } from "$lib/service/fetchUtils";
 import { trainingService, type Training } from "$lib/service/trainingService";
+import { sportService, type Sport } from "$lib/service/sportService";
 
 let {
   variant,
@@ -46,20 +47,27 @@ let {
 } = $props();
 
 let data: Training[] = [];
+let sports: Record<number, Sport> = {};
 let promise = $state(loadData());
 
 async function loadData() {
   try {
+    let training: Training[];
     switch (variant) {
       case "sport":
-        return await trainingService
-          .getTrainingsForSport(parentId)
-          .then((list) => (data = list));
+        training = await trainingService.getTrainingsForSport(parentId);
       case "athlet":
-        return await trainingService
-          .getTrainingsForAthlete(parentId)
-          .then((list) => (data = list));
+        training = await trainingService.getTrainingsForAthlete(parentId);
     }
+    data = training;
+
+    for (const t of data) {
+      if (sports[t.sportId] === undefined) {
+        sports[t.sportId] = await sportService.getSportById(t.sportId);
+      }
+    }
+
+    return data;
   } catch (err) {
     console.error(err);
     addAlert({
@@ -241,18 +249,18 @@ const columns: ColumnDef<Training>[] = $derived([
         onclick: column.getToggleSortingHandler(),
       }),
     cell: ({ row }) => {
-      const metricSnippet = createRawSnippet<[{ metric: number }]>(
-        (getMetric) => {
-          // TODO: render with unit
-          const { metric } = getMetric();
+      const metricSnippet = createRawSnippet<[{ metric: number, sport: Sport }]>(
+        (getData) => {
+          const { metric, sport } = getData();
           return {
-            render: () => `<div>${metric}</div>`,
+            render: () => `<div>${metric} ${sport.unit}</div>`,
           };
         },
       );
 
       return renderSnippet(metricSnippet, {
         metric: row.original.metric,
+        sport: sports[row.original.sportId]
       });
     },
   },
@@ -265,11 +273,11 @@ const columns: ColumnDef<Training>[] = $derived([
         onclick: column.getToggleSortingHandler(),
       }),
     cell: ({ row }) => {
-      // TODO: render proper date
       const dateSnippet = createRawSnippet<[{ date: string }]>((getDate) => {
         const { date } = getDate();
+        const formattedDate = new Date(date).toLocaleString();
         return {
-          render: () => `<div>${date}</div>`,
+          render: () => `<div>${formattedDate}</div>`,
         };
       });
 
