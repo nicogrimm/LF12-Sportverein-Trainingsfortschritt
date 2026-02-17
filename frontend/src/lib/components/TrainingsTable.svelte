@@ -35,6 +35,7 @@ import { Label } from "$lib/components/ui/label";
 import { getErrorMessage } from "$lib/service/fetchUtils";
 import { trainingService, type Training } from "$lib/service/trainingService";
 import { sportService, type Sport } from "$lib/service/sportService";
+import { athleteService, type Athlete } from "$lib/service/athleteService";
 import { formatDateToInputFieldFormat } from "$lib/utils";
 
 let {
@@ -48,6 +49,7 @@ let {
 } = $props();
 
 let data: Training[] = [];
+let athletes: Record<number, Athlete> = {};
 let sports: Record<number, Sport> = {};
 let promise = $state(loadData());
 
@@ -57,14 +59,19 @@ async function loadData() {
     switch (variant) {
       case "sport":
         training = await trainingService.getTrainingsForSport(parentId);
+        break;
       case "athlet":
         training = await trainingService.getTrainingsForAthlete(parentId);
+        break;
     }
     data = training;
 
     for (const t of data) {
       if (sports[t.sportId] === undefined) {
         sports[t.sportId] = await sportService.getSportById(t.sportId);
+      }
+      if (athletes[t.athleteId] === undefined) {
+        athletes[t.athleteId] = await athleteService.getAthleteById(t.athleteId);
       }
     }
 
@@ -96,6 +103,9 @@ async function submitAdd(event: SubmitEvent) {
   if (!addTrainingFormRef) {
     return;
   }
+  if (variant !== "athlet") {
+    throw new Error("Interner Fehler");
+  }
   clearAlerts();
 
   let data = new FormData(addTrainingFormRef);
@@ -103,7 +113,9 @@ async function submitAdd(event: SubmitEvent) {
     await trainingService.createTrainingForAthlete({
       athleteId: parentId,
       sportId: parseInt(data.get("sportId")!.toString()),
-      date: data.get("date") ? new Date(data.get("date")!.toString()).toISOString() : "",
+      date: data.get("date")
+        ? new Date(data.get("date")!.toString()).toISOString()
+        : "",
       metric: parseInt(data.get("metric")!.toString()),
     });
   } catch (e) {
@@ -147,7 +159,7 @@ async function handleDelete() {
 }
 
 const parentCol: ColumnDef<Training> = $derived(
-  variant == "sport"
+  variant === "sport"
     ? {
         id: "athlete",
         accessorKey: "athleteId",
@@ -157,18 +169,19 @@ const parentCol: ColumnDef<Training> = $derived(
             onclick: column.getToggleSortingHandler(),
           }),
         cell: ({ row }) => {
-          const sportSnippet = createRawSnippet<[{ sportId: number }]>(
-            (getSport) => {
+          const athleteSnippet = createRawSnippet<[{ athleteId: number }]>(
+            (getAthletId) => {
               // TODO: Make it pretty instead of showing just an Id
-              const { sportId } = getSport();
+              const { athleteId } = getAthletId();
+              const athlete = athletes[athleteId];
               return {
-                render: () => `<div>${sportId}</div>`,
+                render: () => `<div>${athlete.firstname} ${athlete.name}</div>`,
               };
             },
           );
 
-          return renderSnippet(sportSnippet, {
-            sportId: row.original.sportId,
+          return renderSnippet(athleteSnippet, {
+            athleteId: row.original.athleteId
           });
         },
       }
@@ -389,7 +402,7 @@ $effect(() => {
         <!--        class="max-w-sm" -->
         <!--      /> -->
 
-        {#if variant == "athlet"}
+        {#if variant === "athlet"}
           <Dialog.Root bind:open={addTrainingDialogOpened}>
             <Dialog.Trigger
               class={buttonVariants({ variant: "default" })}

@@ -8,7 +8,7 @@ import { location, switchLocation } from "$lib/location";
 
 let { training }: { training: Training } = $props();
 
-// TODO: add button for editing
+// TODO: add button for detail view where you can edit the entry
 </script>
 
 <div></div>

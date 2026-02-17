@@ -130,7 +130,7 @@ async function submitUpdate(event: SubmitEvent) {
           </Dialog.Trigger>
           <Dialog.Content class="sm:max-w-[425px]">
             <Dialog.Header>
-              <Dialog.Title>Athleten bearbeiten</Dialog.Title>
+              <Dialog.Title>Sportart bearbeiten</Dialog.Title>
             </Dialog.Header>
             <form
               class="grid gap-4"
