@@ -49,6 +49,14 @@
   const defaultOptions: ChartOptions = {
     responsive: true,
     maintainAspectRatio: false,
+    elements: {
+      point: {
+        radius: 4,
+        hoverRadius: 8,
+        pointStyle: "circle",
+        backgroundColor: "white",
+      },
+    },
     plugins: {
       legend: {
         display: true,
