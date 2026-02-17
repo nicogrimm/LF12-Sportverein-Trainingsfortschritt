@@ -251,7 +251,7 @@ async function submitUpdate(event: SubmitEvent) {
 
       {#if data?.id}
         <h3 class="mt-8 text-lg font-bold">Trainings</h3>
-        <TrainingsTable variant="athlet" parentId={data.id} bind:dialogOpened={trainingsTablesDialogOpened} />
+        <TrainingsTable variant="athlet" parentId={data.id} bind:dialogOpened={trainingsTablesDialogOpened} onchange={() => loadSportCharts(data!.id)} />
 
         {#if sportCharts.length > 0}
           <h3 class="mt-8 text-lg font-bold">Trainingsfortschritt</h3>

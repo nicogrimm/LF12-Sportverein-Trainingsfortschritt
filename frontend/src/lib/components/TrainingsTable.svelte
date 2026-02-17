@@ -42,10 +42,12 @@ let {
   variant,
   parentId,
   dialogOpened = $bindable(),
+  onchange,
 }: {
   variant: "sport" | "athlet";
   parentId: number;
   dialogOpened: boolean;
+  onchange?: () => void;
 } = $props();
 
 let data: Training[] = [];
@@ -131,6 +133,7 @@ async function submitAdd(event: SubmitEvent) {
   addTrainingDialogOpened = false;
 
   refreshData();
+  onchange?.();
 }
 
 async function handleDelete() {
@@ -156,6 +159,7 @@ async function handleDelete() {
   rowSelection = {};
 
   refreshData();
+  onchange?.();
 }
 
 const parentCol: ColumnDef<Training> = $derived(
