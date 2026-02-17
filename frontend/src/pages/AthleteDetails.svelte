@@ -1,7 +1,10 @@
 <script lang="ts">
 import { athleteService, type Athlete } from "$lib/service/athleteService";
+import { trainingService, type Training } from "$lib/service/trainingService";
+import { sportService, type Sport } from "$lib/service/sportService";
 import Loading from "$lib/components/Loading.svelte";
 import Alertbox from "$lib/components/Alertbox.svelte";
+import Chart from "$lib/components/Chart.svelte";
 import { addAlert, clearAlerts } from "$lib/alerts";
 import { location } from "$lib/location";
 import Button, {
@@ -12,7 +15,9 @@ import { getErrorMessage } from "$lib/service/fetchUtils";
 import { Input } from "$lib/components/ui/input/index.js";
 import * as Dialog from "$lib/components/ui/dialog";
 import { Label } from "$lib/components/ui/label";
-  import TrainingsTable from "$lib/components/TrainingsTable.svelte";
+import TrainingsTable from "$lib/components/TrainingsTable.svelte";
+import * as Tabs from "$lib/components/ui/tabs";
+import type { ChartData } from "chart.js";
 
 let data: Athlete | undefined = $state();
 let promise = $state(loadData());
@@ -23,6 +28,14 @@ let deleteDialogOpen = $state(false);
 
 let trainingsTablesDialogOpened = $state(false);
 
+type SportChart = {
+  sport: Sport;
+  chartData: ChartData;
+  visible: boolean;
+};
+
+let sportCharts: SportChart[] = $state([]);
+
 async function loadData() {
   try {
     if ($location.page !== "athlete-details") {
@@ -30,14 +43,62 @@ async function loadData() {
       return;
     }
 
-    return await athleteService
-      .getAthleteById($location.athleteId)
-      .then((athlete) => (data = athlete));
+    const athlete = await athleteService.getAthleteById($location.athleteId);
+    data = athlete;
+
+    await loadSportCharts(athlete.id);
+
+    return athlete;
   } catch (err) {
     console.error(err);
     addAlert({
       level: "error",
       title: "Fehler beim Holen der Athleten-Details",
+      description: getErrorMessage(err),
+    });
+  }
+}
+
+async function loadSportCharts(athleteId: number) {
+  try {
+    const trainings = await trainingService.getTrainingsForAthlete(athleteId);
+
+    const bySport = new Map<number, Training[]>();
+    for (const t of trainings) {
+      if (!bySport.has(t.sportId)) bySport.set(t.sportId, []);
+      bySport.get(t.sportId)!.push(t);
+    }
+
+    const charts: SportChart[] = [];
+    for (const [sportId, sportTrainings] of bySport) {
+      const sport = await sportService.getSportById(sportId);
+      const sorted = sportTrainings.sort(
+        (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime(),
+      );
+
+      charts.push({
+        sport,
+        chartData: {
+          labels: sorted.map((t) => new Date(t.date).toLocaleDateString("de-DE")),
+          datasets: [
+            {
+              label: `${sport.name} (${sport.unit})`,
+              data: sorted.map((t) => t.metric),
+              fill: false,
+              borderColor: `hsl(${(sportId * 137) % 360}, 70%, 50%)`,
+            },
+          ],
+        },
+        visible: false,
+      });
+    }
+
+    sportCharts = charts;
+  } catch (err) {
+    console.error(err);
+    addAlert({
+      level: "error",
+      title: "Fehler beim Laden der Diagramm-Daten",
       description: getErrorMessage(err),
     });
   }
@@ -191,6 +252,24 @@ async function submitUpdate(event: SubmitEvent) {
       {#if data?.id}
         <h3 class="mt-8 text-lg font-bold">Trainings</h3>
         <TrainingsTable variant="athlet" parentId={data.id} bind:dialogOpened={trainingsTablesDialogOpened} />
+
+        {#if sportCharts.length > 0}
+          <h3 class="mt-8 text-lg font-bold">Trainingsfortschritt</h3>
+          <Tabs.Root value={sportCharts[0].sport.name}>
+            <Tabs.List>
+              {#each sportCharts as sc}
+                <Tabs.Trigger value={sc.sport.name}>{sc.sport.name}</Tabs.Trigger>
+              {/each}
+            </Tabs.List>
+            {#each sportCharts as sc}
+              <Tabs.Content value={sc.sport.name}>
+                <div class="h-80 w-full rounded border p-2">
+                  <Chart data={sc.chartData} />
+                </div>
+              </Tabs.Content>
+            {/each}
+          </Tabs.Root>
+        {/if}
       {/if}
     </div>
   {/await}

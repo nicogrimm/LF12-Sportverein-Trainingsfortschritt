@@ -1,0 +1,104 @@
+<script lang="ts">
+  import { onMount, onDestroy } from "svelte";
+  import {
+    Chart,
+    CategoryScale,
+    LinearScale,
+    PointElement,
+    LineElement,
+    LineController,
+    BarElement,
+    BarController,
+    ArcElement,
+    RadialLinearScale,
+    PieController,
+    DoughnutController,
+    RadarController,
+    Title,
+    Tooltip,
+    Legend,
+    Filler,
+  } from "chart.js";
+  import type { ChartData, ChartType, ChartOptions } from "chart.js";
+
+  Chart.register(
+    CategoryScale,
+    LinearScale,
+    PointElement,
+    LineElement,
+    LineController,
+    BarElement,
+    BarController,
+    ArcElement,
+    RadialLinearScale,
+    PieController,
+    DoughnutController,
+    RadarController,
+    Title,
+    Tooltip,
+    Legend,
+    Filler,
+  );
+
+  interface Props {
+    data: ChartData;
+    type?: ChartType;
+    options?: ChartOptions;
+  }
+
+  const defaultOptions: ChartOptions = {
+    responsive: true,
+    maintainAspectRatio: false,
+    transitions: {
+      show: {
+        animations: {
+          x: { from: 0 },
+          y: { from: 0 },
+        },
+      },
+      hide: {
+        animations: {
+          x: { to: 0 },
+          y: { to: 0 },
+        },
+      },
+    },
+  };
+
+  let { data, type = "line", options = {} }: Props = $props();
+
+  let canvas: HTMLCanvasElement;
+  let chart: Chart | undefined;
+
+  function mergedOptions(): ChartOptions {
+    return { ...defaultOptions, ...options };
+  }
+
+  function plainData(): ChartData {
+    return JSON.parse(JSON.stringify(data));
+  }
+
+  onMount(() => {
+    chart = new Chart(canvas, {
+      type,
+      data: plainData(),
+      options: mergedOptions(),
+    });
+  });
+
+  $effect(() => {
+    if (chart) {
+      chart.data = plainData();
+      chart.options = mergedOptions();
+      chart.update();
+    }
+  });
+
+  onDestroy(() => {
+    chart?.destroy();
+  });
+</script>
+
+<div class="relative h-full w-full">
+  <canvas bind:this={canvas}></canvas>
+</div>
