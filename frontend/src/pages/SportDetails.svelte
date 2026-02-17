@@ -284,7 +284,7 @@ async function submitUpdate(event: SubmitEvent) {
                 checked={ad.selected}
                 onCheckedChange={(checked) => (athleteDatasets[i].selected = checked === true)}
               />
-              <span style="color: {ad.color}">{ad.athlete.firstname} {ad.athlete.name}</span>
+              <span >{ad.athlete.firstname} {ad.athlete.name}</span>
             </label>
           {/each}
         </div>
