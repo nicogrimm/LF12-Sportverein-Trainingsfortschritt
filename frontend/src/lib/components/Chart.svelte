@@ -52,6 +52,7 @@
     plugins: {
       legend: {
         display: true,
+        onClick: () => {},
         labels: {
           usePointStyle: true,
         },
