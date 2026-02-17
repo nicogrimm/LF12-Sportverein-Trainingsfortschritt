@@ -49,6 +49,14 @@
   const defaultOptions: ChartOptions = {
     responsive: true,
     maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        display: true,
+        labels: {
+          usePointStyle: true,
+        },
+      },
+    },
     transitions: {
       show: {
         animations: {
@@ -88,7 +96,20 @@
 
   $effect(() => {
     if (chart) {
-      chart.data = plainData();
+      const hiddenState = new Map<number, boolean>();
+      chart.data.datasets.forEach((ds, i) => {
+        hiddenState.set(i, chart!.isDatasetVisible(i) === false);
+      });
+
+      const newData = plainData();
+
+      newData.datasets.forEach((ds, i) => {
+        if (hiddenState.has(i)) {
+          ds.hidden = hiddenState.get(i);
+        }
+      });
+
+      chart.data = newData;
       chart.options = mergedOptions();
       chart.update();
     }
