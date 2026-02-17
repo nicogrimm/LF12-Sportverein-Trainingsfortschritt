@@ -299,7 +299,7 @@ const columns: ColumnDef<Training>[] = $derived([
     id: "actions",
     enableHiding: false,
     cell: ({ row }) =>
-      renderComponent(TrainingDataTableActions, { training: row.original }),
+      renderComponent(TrainingDataTableActions, { training: row.original, variant }),
   },
 ]);
 
