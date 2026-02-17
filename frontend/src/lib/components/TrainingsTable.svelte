@@ -121,7 +121,7 @@ async function submitAdd(event: SubmitEvent) {
       date: data.get("date")
         ? new Date(data.get("date")!.toString()).toISOString()
         : "",
-      metric: parseInt(data.get("metric")!.toString()),
+      metric: parseFloat(data.get("metric")!.toString()),
     });
   } catch (e) {
     console.error(e);
@@ -417,16 +417,11 @@ $effect(() => {
               >
                 <Alertbox />
                 <div class="grid gap-4">
-                  <!-- private int trainingId; -->
-                  <!-- private int athleteId; -->
-                  <!-- private int sportId; -->
-                  <!-- private OffsetDateTime date; -->
-                  <!-- private Float metric; -->
                   <div class="grid gap-3">
                     <!-- TODO: show name instead of id -->
-                    <Label for="firstname-1">Athlet</Label>
+                    <Label for="athleteId-1">Athlet</Label>
                     <Input
-                      id="firstname-1"
+                      id="athleteId-1"
                       name="athleteId"
                       type="number"
                       value={parentId}
@@ -435,13 +430,13 @@ $effect(() => {
                   </div>
                   <div class="grid gap-3">
                     <!-- TODO: select from existing data and show resulting unit -->
-                    <Label for="name-1">Sportart</Label>
-                    <Input id="name-1" name="sportId" type="number" required />
+                    <Label for="sportId-1">Sportart</Label>
+                    <Input id="sportId-1" name="sportId" type="number" required />
                   </div>
                   <div class="grid gap-3">
-                    <Label for="name-1">Datum</Label>
+                    <Label for="date-1">Datum</Label>
                     <Input
-                      id="name-1"
+                      id="date-1"
                       name="date"
                       type="datetime-local"
                       required
@@ -449,9 +444,9 @@ $effect(() => {
                     />
                   </div>
                   <div class="grid gap-3">
-                    <Label for="name-1">Metrik</Label>
+                    <Label for="metric-1">Metrik</Label>
                     <Input
-                      id="name-1"
+                      id="metric-1"
                       name="metric"
                       type="number"
                       step="any"

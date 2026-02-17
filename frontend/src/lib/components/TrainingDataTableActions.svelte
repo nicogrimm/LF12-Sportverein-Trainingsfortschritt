@@ -2,9 +2,8 @@
 import EllipsisIcon from "@lucide/svelte/icons/ellipsis";
 import { Button } from "$lib/components/ui/button/index.js";
 import * as DropdownMenu from "$lib/components/ui/dropdown-menu/index.js";
-// import { switchLocation } from "$lib/location";
 import type { Training } from "$lib/service/trainingService";
-import { location, switchLocation } from "$lib/location";
+import { switchLocation } from "$lib/location";
 
 let { training, variant }: { training: Training; variant: "sport" | "athlet" } =
   $props();
@@ -32,6 +31,11 @@ let { training, variant }: { training: Training; variant: "sport" | "athlet" } =
     <DropdownMenu.Group>
       <DropdownMenu.Label>Aktionen</DropdownMenu.Label>
     </DropdownMenu.Group>
+    <DropdownMenu.Item
+      onclick={() => switchLocation({ page: "training-details", athleteId: training.athleteId, trainingId: training.id })}
+    >
+      Zur Detailansicht gehen
+    </DropdownMenu.Item>
     {#if variant === "sport"}
       <DropdownMenu.Item
         onclick={() => switchLocation({ page: "athlete-details", athleteId: training.athleteId })}

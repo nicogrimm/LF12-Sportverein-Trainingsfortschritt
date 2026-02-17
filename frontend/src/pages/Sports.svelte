@@ -317,8 +317,8 @@ const table = createSvelteTable({
                   <Input id="name-1" name="name" />
                 </div>
                 <div class="grid gap-3">
-                  <Label for="name-1">Einheit</Label>
-                  <Input id="name-1" name="unit" />
+                  <Label for="unit-1">Einheit</Label>
+                  <Input id="unit-1" name="unit" />
                 </div>
               </div>
               <Dialog.Footer>

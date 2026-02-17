@@ -11,6 +11,11 @@ export type Location =
     sportId: number;
   }
   | {
+    page: "training-details";
+    athleteId: number;
+    trainingId: number;
+  }
+  | {
     page: "sports" | "athletes";
   };
 
@@ -58,6 +63,22 @@ function readLocation(): Location {
       }
 
       return { page: "sports" };
+    case "training":
+      if (!pathParts[2]) {
+        break;
+      }
+
+      let athleteId;
+      let trainingId;
+      try {
+        athleteId = parseInt(pathParts[1]);
+        trainingId = parseInt(pathParts[2]);
+      } catch {
+        addAlert({ level: "error", title: "Id muss eine Zahl seien" });
+        break;
+      }
+
+      return { page: "training-details", athleteId, trainingId };
   }
 
   return { page: "athletes" };
@@ -86,6 +107,10 @@ export function switchLocation(newLocation: Location) {
       break;
     case "sports":
       url.pathname = "/sports";
+      window.history.pushState({}, "", url.toString());
+      break;
+    case "training-details":
+      url.pathname = "/training/" + newLocation.athleteId + "/" + newLocation.trainingId;
       window.history.pushState({}, "", url.toString());
       break;
   }
