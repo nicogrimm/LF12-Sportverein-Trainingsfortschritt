@@ -179,25 +179,17 @@ async function submitUpdate(event: SubmitEvent) {
               <Alertbox />
               <div class="grid gap-4">
                 <div class="grid gap-3">
-                  <!-- TODO: show name instead of id -->
-                  <Label for="athleteId-1">Athlet</Label>
-                  <Input
-                    id="athleteId-1"
-                    name="athleteId"
-                    type="number"
-                    value={data!.athleteId}
-                    disabled
+                  <Label>Athlet</Label>
+                  <TooltipSnippet
+                    content={`${athlete!.firstname} ${athlete!.name}`}
+                    tooltip={`Id: ${athlete!.id}`}
                   />
                 </div>
                 <div class="grid gap-3">
-                  <!-- TODO: show name instead of id -->
-                  <Label for="sportId-1">Sportart</Label>
-                  <Input
-                    id="sportId-1"
-                    name="sportId"
-                    type="number"
-                    value={data!.sportId}
-                    disabled
+                  <Label>Sportart</Label>
+                  <TooltipSnippet
+                    content={sport!.name}
+                    tooltip={`Id: ${sport!.id}`}
                   />
                 </div>
                 <div class="grid gap-3">
@@ -206,8 +198,8 @@ async function submitUpdate(event: SubmitEvent) {
                     id="date-1"
                     name="date"
                     type="datetime-local"
-                    required
                     value={formatDateToInputFieldFormat(data?.date ? new Date(data.date) : new Date())}
+                    required
                   />
                 </div>
                 <div class="grid gap-3">
@@ -217,8 +209,8 @@ async function submitUpdate(event: SubmitEvent) {
                     name="metric"
                     type="number"
                     step="any"
-                    required
                     value={data?.metric}
+                    required
                   />
                 </div>
               </div>

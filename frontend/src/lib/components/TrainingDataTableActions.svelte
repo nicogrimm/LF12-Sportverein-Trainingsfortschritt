@@ -7,8 +7,6 @@ import { switchLocation } from "$lib/location";
 
 let { training, variant }: { training: Training; variant: "sport" | "athlet" } =
   $props();
-
-// TODO: add button for detail view where you can edit the entry
 </script>
 
 <div></div>

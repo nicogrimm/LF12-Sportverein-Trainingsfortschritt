@@ -299,7 +299,10 @@ const columns: ColumnDef<Training>[] = $derived([
     id: "actions",
     enableHiding: false,
     cell: ({ row }) =>
-      renderComponent(TrainingDataTableActions, { training: row.original, variant }),
+      renderComponent(TrainingDataTableActions, {
+        training: row.original,
+        variant,
+      }),
   },
 ]);
 
@@ -418,20 +421,21 @@ $effect(() => {
                 <Alertbox />
                 <div class="grid gap-4">
                   <div class="grid gap-3">
-                    <!-- TODO: show name instead of id -->
-                    <Label for="athleteId-1">Athlet</Label>
-                    <Input
-                      id="athleteId-1"
-                      name="athleteId"
-                      type="number"
-                      value={parentId}
-                      disabled
+                    <Label>Athlet</Label>
+                    <TooltipSnippet
+                      content={`${athletes[parentId].firstname} ${athletes[parentId].name}`}
+                      tooltip={`Id: ${parentId}`}
                     />
                   </div>
                   <div class="grid gap-3">
                     <!-- TODO: select from existing data and show resulting unit -->
                     <Label for="sportId-1">Sportart</Label>
-                    <Input id="sportId-1" name="sportId" type="number" required />
+                    <Input
+                      id="sportId-1"
+                      name="sportId"
+                      type="number"
+                      required
+                    />
                   </div>
                   <div class="grid gap-3">
                     <Label for="date-1">Datum</Label>
@@ -439,8 +443,8 @@ $effect(() => {
                       id="date-1"
                       name="date"
                       type="datetime-local"
-                      required
                       value={formatDateToInputFieldFormat(new Date())}
+                      required
                     />
                   </div>
                   <div class="grid gap-3">
