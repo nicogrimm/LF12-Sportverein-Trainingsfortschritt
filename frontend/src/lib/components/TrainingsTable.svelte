@@ -198,8 +198,9 @@ const parentCol: ColumnDef<Training> = $derived(
             (getSport) => {
               // TODO: Make it pretty instead of showing just an Id
               const { sportId } = getSport();
+              const sport = sports[sportId];
               return {
-                render: () => `<div>${sportId}</div>`,
+                render: () => `<div>${sport.name}</div>`,
               };
             },
           );
