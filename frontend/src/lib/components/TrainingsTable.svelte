@@ -37,6 +37,7 @@ import { trainingService, type Training } from "$lib/service/trainingService";
 import { sportService, type Sport } from "$lib/service/sportService";
 import { athleteService, type Athlete } from "$lib/service/athleteService";
 import { formatDateToInputFieldFormat } from "$lib/utils";
+import TooltipSnippet from "./TooltipSnippet.svelte";
 
 let {
   variant,
@@ -73,7 +74,9 @@ async function loadData() {
         sports[t.sportId] = await sportService.getSportById(t.sportId);
       }
       if (athletes[t.athleteId] === undefined) {
-        athletes[t.athleteId] = await athleteService.getAthleteById(t.athleteId);
+        athletes[t.athleteId] = await athleteService.getAthleteById(
+          t.athleteId,
+        );
       }
     }
 
@@ -173,19 +176,13 @@ const parentCol: ColumnDef<Training> = $derived(
             onclick: column.getToggleSortingHandler(),
           }),
         cell: ({ row }) => {
-          const athleteSnippet = createRawSnippet<[{ athleteId: number }]>(
-            (getAthletId) => {
-              // TODO: Make it pretty instead of showing just an Id
-              const { athleteId } = getAthletId();
-              const athlete = athletes[athleteId];
-              return {
-                render: () => `<div>${athlete.firstname} ${athlete.name}</div>`,
-              };
-            },
-          );
+          const athlete = athletes[row.original.athleteId];
+          const content = `${athlete.firstname} ${athlete.name}`;
+          const tooltip = `ID: ${row.original.athleteId}`;
 
-          return renderSnippet(athleteSnippet, {
-            athleteId: row.original.athleteId
+          return renderComponent(TooltipSnippet, {
+            content,
+            tooltip,
           });
         },
       }
@@ -198,19 +195,13 @@ const parentCol: ColumnDef<Training> = $derived(
             onclick: column.getToggleSortingHandler(),
           }),
         cell: ({ row }) => {
-          const sportSnippet = createRawSnippet<[{ sportId: number }]>(
-            (getSport) => {
-              // TODO: Make it pretty instead of showing just an Id
-              const { sportId } = getSport();
-              const sport = sports[sportId];
-              return {
-                render: () => `<div>${sport.name}</div>`,
-              };
-            },
-          );
+          const sport = sports[row.original.sportId];
+          const content = sport.name;
+          const tooltip = `ID: ${row.original.sportId}`;
 
-          return renderSnippet(sportSnippet, {
-            sportId: row.original.sportId,
+          return renderComponent(TooltipSnippet, {
+            content,
+            tooltip,
           });
         },
       },
