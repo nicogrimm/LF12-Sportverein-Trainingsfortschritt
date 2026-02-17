@@ -3,21 +3,21 @@ import { addAlert } from "./alerts";
 
 export type Location =
   | {
-    page: "athlete-details";
-    athleteId: number;
-  }
+      page: "athlete-details";
+      athleteId: number;
+    }
   | {
-    page: "sport-details";
-    sportId: number;
-  }
+      page: "sport-details";
+      sportId: number;
+    }
   | {
-    page: "training-details";
-    athleteId: number;
-    trainingId: number;
-  }
+      page: "training-details";
+      athleteId: number;
+      trainingId: number;
+    }
   | {
-    page: "sports" | "athletes";
-  };
+      page: "sports" | "athletes";
+    };
 
 export const location = writable<Location>(readLocation());
 
@@ -110,7 +110,8 @@ export function switchLocation(newLocation: Location) {
       window.history.pushState({}, "", url.toString());
       break;
     case "training-details":
-      url.pathname = "/training/" + newLocation.athleteId + "/" + newLocation.trainingId;
+      url.pathname =
+        "/training/" + newLocation.athleteId + "/" + newLocation.trainingId;
       window.history.pushState({}, "", url.toString());
       break;
   }
