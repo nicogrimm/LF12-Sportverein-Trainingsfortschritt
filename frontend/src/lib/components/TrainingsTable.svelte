@@ -38,6 +38,7 @@ import { sportService, type Sport } from "$lib/service/sportService";
 import { athleteService, type Athlete } from "$lib/service/athleteService";
 import { formatDateToInputFieldFormat } from "$lib/utils";
 import TooltipSnippet from "./TooltipSnippet.svelte";
+import * as Select from "$lib/components/ui/select/index.js";
 
 let {
   variant,
@@ -56,6 +57,16 @@ let athletes: Record<number, Athlete> = {};
 let sports: Record<number, Sport> = {};
 let promise = $state(loadData());
 
+let sportSelected: string = $state("");
+let sportSelectTriggerContent = $derived.by(() => {
+  const i = parseInt(sportSelected);
+  if (isNaN(i)) {
+    return "Sportart auswählen";
+  } else {
+    return sports[parseInt(sportSelected)]?.name ?? "Sportart auswählen";
+  }
+});
+
 async function loadData() {
   try {
     let training: Training[];
@@ -70,14 +81,16 @@ async function loadData() {
     data = training;
 
     for (const t of data) {
-      if (sports[t.sportId] === undefined) {
-        sports[t.sportId] = await sportService.getSportById(t.sportId);
-      }
       if (athletes[t.athleteId] === undefined) {
         athletes[t.athleteId] = await athleteService.getAthleteById(
           t.athleteId,
         );
       }
+    }
+
+    const allSports = await sportService.getSports();
+    for (const sport of allSports) {
+      sports[sport.id] = sport;
     }
 
     return data;
@@ -312,7 +325,6 @@ let columnFilters = $state<ColumnFiltersState>([]);
 let rowSelection = $state<RowSelectionState>({});
 let columnVisibility = $state<VisibilityState>({});
 
-// TODO: grouping by athlet/sport (order by athletid/sportid and then date)
 let table: TanstackTable<Training> | undefined = $state();
 $effect(() => {
   table = createSvelteTable({
@@ -428,14 +440,24 @@ $effect(() => {
                     />
                   </div>
                   <div class="grid gap-3">
-                    <!-- TODO: select from existing data and show resulting unit -->
                     <Label for="sportId-1">Sportart</Label>
-                    <Input
-                      id="sportId-1"
+                    <Select.Root
+                      type="single"
                       name="sportId"
-                      type="number"
+                      bind:value={sportSelected}
                       required
-                    />
+                    >
+                      <Select.Trigger
+                        >{sportSelectTriggerContent}</Select.Trigger
+                      >
+                      <Select.Content id="sportId-1">
+                        {#each Object.entries(sports) as [id, sport] (id)}
+                          <Select.Item value={id} label={sport.name}>
+                            {sport.name}
+                          </Select.Item>
+                        {/each}
+                      </Select.Content>
+                    </Select.Root>
                   </div>
                   <div class="grid gap-3">
                     <Label for="date-1">Datum</Label>
