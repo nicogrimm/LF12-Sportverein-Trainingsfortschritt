@@ -178,7 +178,8 @@ async function handleDelete() {
   onchange?.();
 }
 
-const parentCol: ColumnDef<Training> = $derived(
+const parentCol: ColumnDef<Training> =
+  // svelte-ignore state_referenced_locally
   variant === "sport"
     ? {
         id: "athlete",
@@ -186,6 +187,7 @@ const parentCol: ColumnDef<Training> = $derived(
         header: ({ column }) =>
           renderComponent(DataTableButton, {
             text: "Athlet",
+            sortDir: column.getIsSorted(),
             onclick: column.getToggleSortingHandler(),
           }),
         cell: ({ row }) => {
@@ -205,6 +207,7 @@ const parentCol: ColumnDef<Training> = $derived(
         header: ({ column }) =>
           renderComponent(DataTableButton, {
             text: "Sportart",
+            sortDir: column.getIsSorted(),
             onclick: column.getToggleSortingHandler(),
           }),
         cell: ({ row }) => {
@@ -217,10 +220,8 @@ const parentCol: ColumnDef<Training> = $derived(
             tooltip,
           });
         },
-      },
-);
-
-const columns: ColumnDef<Training>[] = $derived([
+      };
+const columns: ColumnDef<Training>[] = [
   {
     id: "select",
     header: ({ table }) =>
@@ -246,6 +247,7 @@ const columns: ColumnDef<Training>[] = $derived([
     header: ({ column }) =>
       renderComponent(DataTableButton, {
         text: "Id",
+        sortDir: column.getIsSorted(),
         onclick: column.getToggleSortingHandler(),
       }),
     cell: ({ row }) => {
@@ -268,6 +270,7 @@ const columns: ColumnDef<Training>[] = $derived([
     header: ({ column }) =>
       renderComponent(DataTableButton, {
         text: "Metrik",
+        sortDir: column.getIsSorted(),
         onclick: column.getToggleSortingHandler(),
       }),
     cell: ({ row }) => {
@@ -287,11 +290,12 @@ const columns: ColumnDef<Training>[] = $derived([
     },
   },
   {
-    id: "datum",
+    id: "date",
     accessorKey: "date",
     header: ({ column }) =>
       renderComponent(DataTableButton, {
         text: "Datum",
+        sortDir: column.getIsSorted(),
         onclick: column.getToggleSortingHandler(),
       }),
     cell: ({ row }) => {
@@ -317,10 +321,16 @@ const columns: ColumnDef<Training>[] = $derived([
         variant,
       }),
   },
-]);
+];
 
 // let pagination = $state<PaginationState>({ pageIndex: 0, pageSize: 10 });
-let sorting = $state<SortingState>([]);
+let sorting = $state<SortingState>([
+  // svelte-ignore state_referenced_locally
+  variant === "sport"
+    ? { id: "athlete", desc: false }
+    : { id: "sport", desc: false },
+  { id: "date", desc: false },
+]);
 let columnFilters = $state<ColumnFiltersState>([]);
 let rowSelection = $state<RowSelectionState>({});
 let columnVisibility = $state<VisibilityState>({});

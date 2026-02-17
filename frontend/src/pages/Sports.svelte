@@ -45,7 +45,7 @@ async function loadData() {
     addAlert({
       level: "error",
       title: "Fehler beim Holen der Sportarten",
-      description: getErrorMessage(err)
+      description: getErrorMessage(err),
     });
   }
 }
@@ -80,7 +80,7 @@ async function submitAdd(event: SubmitEvent) {
     addAlert({
       level: "error",
       title: "Fehler beim Erstellen der Sportart",
-      description: getErrorMessage(e)
+      description: getErrorMessage(e),
     });
     return;
   }
@@ -102,7 +102,7 @@ async function handleDelete() {
         addAlert({
           level: "error",
           title: "Fehler beim Löschen der Sportart",
-          description: getErrorMessage(err)
+          description: getErrorMessage(err),
         });
       }
     }
@@ -138,6 +138,7 @@ const columns: ColumnDef<Sport>[] = [
     header: ({ column }) =>
       renderComponent(DataTableButton, {
         text: "Id",
+        sortDir: column.getIsSorted(),
         onclick: column.getToggleSortingHandler(),
       }),
     cell: ({ row }) => {
@@ -159,6 +160,7 @@ const columns: ColumnDef<Sport>[] = [
     header: ({ column }) =>
       renderComponent(DataTableButton, {
         text: "Name",
+        sortDir: column.getIsSorted(),
         onclick: column.getToggleSortingHandler(),
       }),
     cell: ({ row }) => {
@@ -180,6 +182,7 @@ const columns: ColumnDef<Sport>[] = [
     header: ({ column }) =>
       renderComponent(DataTableButton, {
         text: "Einheit",
+        sortDir: column.getIsSorted(),
         onclick: column.getToggleSortingHandler(),
       }),
     cell: ({ row }) => {
@@ -204,7 +207,7 @@ const columns: ColumnDef<Sport>[] = [
 ];
 
 // let pagination = $state<PaginationState>({ pageIndex: 0, pageSize: 10 });
-let sorting = $state<SortingState>([]);
+let sorting = $state<SortingState>([{ id: "id", desc: false }]);
 let columnFilters = $state<ColumnFiltersState>([]);
 let rowSelection = $state<RowSelectionState>({});
 let columnVisibility = $state<VisibilityState>({});

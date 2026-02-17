@@ -138,6 +138,7 @@ const columns: ColumnDef<Athlete>[] = [
     header: ({ column }) =>
       renderComponent(DataTableButton, {
         text: "Id",
+        sortDir: column.getIsSorted(),
         onclick: column.getToggleSortingHandler(),
       }),
     cell: ({ row }) => {
@@ -159,6 +160,7 @@ const columns: ColumnDef<Athlete>[] = [
     header: ({ column }) =>
       renderComponent(DataTableButton, {
         text: "Name",
+        sortDir: column.getIsSorted(),
         onclick: column.getToggleSortingHandler(),
       }),
     cell: ({ row }) => {
@@ -186,7 +188,7 @@ const columns: ColumnDef<Athlete>[] = [
 ];
 
 // let pagination = $state<PaginationState>({ pageIndex: 0, pageSize: 10 });
-let sorting = $state<SortingState>([]);
+let sorting = $state<SortingState>([{ id: "id", desc: false }]);
 let columnFilters = $state<ColumnFiltersState>([]);
 let rowSelection = $state<RowSelectionState>({});
 let columnVisibility = $state<VisibilityState>({});
