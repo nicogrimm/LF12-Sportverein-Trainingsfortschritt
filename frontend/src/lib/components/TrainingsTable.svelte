@@ -178,7 +178,7 @@ const parentCol: ColumnDef<Training> = $derived(
         cell: ({ row }) => {
           const athlete = athletes[row.original.athleteId];
           const content = `${athlete.firstname} ${athlete.name}`;
-          const tooltip = `ID: ${row.original.athleteId}`;
+          const tooltip = `Id: ${row.original.athleteId}`;
 
           return renderComponent(TooltipSnippet, {
             content,
@@ -197,7 +197,7 @@ const parentCol: ColumnDef<Training> = $derived(
         cell: ({ row }) => {
           const sport = sports[row.original.sportId];
           const content = sport.name;
-          const tooltip = `ID: ${row.original.sportId}`;
+          const tooltip = `Id: ${row.original.sportId}`;
 
           return renderComponent(TooltipSnippet, {
             content,
