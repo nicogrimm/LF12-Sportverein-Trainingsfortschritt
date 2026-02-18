@@ -50,7 +50,7 @@ async function loadData() {
   }
 }
 
-async function refreshData() {
+function refreshData() {
   promise = loadData();
 }
 
@@ -72,8 +72,8 @@ async function submitAdd(event: SubmitEvent) {
   let data = new FormData(addAthleteFormRef);
   try {
     await athleteService.createAthlete({
-      firstname: data.get("firstname")!.toString(),
-      name: data.get("name")!.toString(),
+      firstname: data.get("firstname") as string,
+      name: data.get("name") as string,
     });
   } catch (e) {
     console.error(e);

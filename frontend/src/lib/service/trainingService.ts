@@ -11,42 +11,42 @@ export type Training = {
 
 class TrainingService {
   async getAllTrainings(): Promise<Training[]> {
-    return await fetchWithErrorHandling(`${baseUrl}/api/trainings`).then(
+    return (await fetchWithErrorHandling(`${baseUrl}/api/trainings`).then(
       (resp) => resp.json(),
-    );
+    )) as Training[];
   }
 
   async getTrainingsForAthlete(athleteId: number): Promise<Training[]> {
-    return await fetchWithErrorHandling(
+    return (await fetchWithErrorHandling(
       `${baseUrl}/api/trainings/athlete/${athleteId}`,
-    ).then((resp) => resp.json());
+    ).then((resp) => resp.json())) as Training[];
   }
 
   async getTrainingsForSport(sportId: number): Promise<Training[]> {
-    return await fetchWithErrorHandling(
+    return (await fetchWithErrorHandling(
       `${baseUrl}/api/trainings/sport/${sportId}`,
-    ).then((resp) => resp.json());
+    ).then((resp) => resp.json())) as Training[];
   }
 
   async getTrainingForAthlete(
     athleteId: number,
     trainingId: number,
   ): Promise<Training> {
-    return await fetchWithErrorHandling(
+    return (await fetchWithErrorHandling(
       `${baseUrl}/api/trainings/athlete/${athleteId}/training/${trainingId}`,
-    ).then((resp) => resp.json());
+    ).then((resp) => resp.json())) as Training;
   }
 
   async createTrainingForAthlete(
     training: Omit<Training, "id">,
   ): Promise<Training> {
-    return await fetchWithErrorHandling(`${baseUrl}/api/trainings/athlete`, {
+    return (await fetchWithErrorHandling(`${baseUrl}/api/trainings/athlete`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify(training),
-    }).then((resp) => resp.json());
+    }).then((resp) => resp.json())) as Training;
   }
 
   async updateTrainingForAthlete(
@@ -54,7 +54,7 @@ class TrainingService {
     trainingId: number,
     training: Omit<Training, "id">,
   ): Promise<Training> {
-    return await fetchWithErrorHandling(
+    return (await fetchWithErrorHandling(
       `${baseUrl}/api/trainings/athlete/${athleteId}/training/${trainingId}`,
       {
         method: "PUT",
@@ -63,7 +63,7 @@ class TrainingService {
         },
         body: JSON.stringify({ ...training, athleteId }),
       },
-    ).then((resp) => resp.json());
+    ).then((resp) => resp.json())) as Training;
   }
 
   async deleteTrainingForAthlete(

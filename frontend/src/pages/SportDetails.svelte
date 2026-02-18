@@ -18,6 +18,7 @@ import { Label } from "$lib/components/ui/label";
 import { Checkbox } from "$lib/components/ui/checkbox";
 import TrainingsTable from "$lib/components/TrainingsTable.svelte";
 import type { ChartData } from "chart.js";
+import { SvelteMap, SvelteSet } from "svelte/reactivity";
 
 let data: Sport | undefined = $state();
 let promise = $state(loadData());
@@ -54,7 +55,7 @@ let chartData: ChartData = $derived({
 });
 
 function getUniqueDates(): string[] {
-  const allDates = new Set<string>();
+  const allDates = new SvelteSet<string>();
   for (const ad of athleteDatasets) {
     for (const t of ad.trainings) {
       allDates.add(new Date(t.date).toLocaleDateString("de-DE"));
@@ -90,7 +91,7 @@ async function loadData() {
   }
 }
 
-async function refreshData() {
+function refreshData() {
   promise = loadData();
 }
 
@@ -98,7 +99,7 @@ async function loadAthleteCharts(sportId: number) {
   try {
     const trainings = await trainingService.getTrainingsForSport(sportId);
 
-    const byAthlete = new Map<number, Training[]>();
+    const byAthlete = new SvelteMap<number, Training[]>();
     for (const t of trainings) {
       if (!byAthlete.has(t.athleteId)) byAthlete.set(t.athleteId, []);
       byAthlete.get(t.athleteId)!.push(t);
@@ -158,8 +159,8 @@ async function submitUpdate(event: SubmitEvent) {
   try {
     await sportService.updateSport({
       id: data!.id,
-      name: formData.get("name")!.toString(),
-      unit: formData.get("unit")!.toString(),
+      name: formData.get("name") as string,
+      unit: formData.get("unit") as string,
     });
   } catch (e) {
     console.error(e);
@@ -278,7 +279,7 @@ async function submitUpdate(event: SubmitEvent) {
       {#if athleteDatasets.length > 0}
         <h3 class="mt-8 text-lg font-bold">Trainingsfortschritt</h3>
         <div class="flex flex-wrap gap-4 rounded border p-3">
-          {#each athleteDatasets as ad, i}
+          {#each athleteDatasets as ad, i (ad.athlete.id)}
             <label class="flex items-center gap-2 text-sm">
               <Checkbox
                 checked={ad.selected}

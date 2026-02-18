@@ -63,7 +63,7 @@ function readLocation(): Location {
       }
 
       return { page: "sports" };
-    case "training":
+    case "training": {
       if (!pathParts[2]) {
         break;
       }
@@ -79,6 +79,7 @@ function readLocation(): Location {
       }
 
       return { page: "training-details", athleteId, trainingId };
+    }
   }
 
   return { page: "athletes" };

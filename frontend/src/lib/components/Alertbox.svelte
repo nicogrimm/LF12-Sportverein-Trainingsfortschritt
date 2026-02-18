@@ -10,7 +10,7 @@ import ChevronRightIcon from "@lucide/svelte/icons/chevron-right";
 import { Button } from "./ui/button";
 import { SvelteSet } from "svelte/reactivity";
 
-let expandedAlerts = $state<SvelteSet<number>>(new SvelteSet());
+let expandedAlerts = new SvelteSet<number>();
 
 function toggleExpand(index: number) {
   console.log("toggle " + index);
@@ -20,12 +20,11 @@ function toggleExpand(index: number) {
   } else {
     expandedAlerts.add(index);
   }
-  expandedAlerts = expandedAlerts;
 }
 </script>
 
 <div class={`flex flex-col gap-2 ${$alerts.length != 0 ? "p-2" : ""}`}>
-  {#each $alerts as alert, index}
+  {#each $alerts as alert, index (index)}
     <Alert variant={alert.level == 'error' ? 'destructive' : 'default'}>
       {#if alert.level == 'info'}
         <InfoIcon />

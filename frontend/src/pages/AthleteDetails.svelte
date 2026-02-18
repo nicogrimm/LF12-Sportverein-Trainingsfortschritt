@@ -18,6 +18,7 @@ import { Label } from "$lib/components/ui/label";
 import TrainingsTable from "$lib/components/TrainingsTable.svelte";
 import * as Tabs from "$lib/components/ui/tabs";
 import type { ChartData } from "chart.js";
+import { SvelteMap } from "svelte/reactivity";
 
 let data: Athlete | undefined = $state();
 let promise = $state(loadData());
@@ -63,7 +64,7 @@ async function loadSportCharts(athleteId: number) {
   try {
     const trainings = await trainingService.getTrainingsForAthlete(athleteId);
 
-    const bySport = new Map<number, Training[]>();
+    const bySport = new SvelteMap<number, Training[]>();
     for (const t of trainings) {
       if (!bySport.has(t.sportId)) bySport.set(t.sportId, []);
       bySport.get(t.sportId)!.push(t);
@@ -104,7 +105,7 @@ async function loadSportCharts(athleteId: number) {
   }
 }
 
-async function refreshData() {
+function refreshData() {
   promise = loadData();
 }
 
@@ -135,8 +136,8 @@ async function submitUpdate(event: SubmitEvent) {
   try {
     await athleteService.updateAthlete({
       id: data!.id,
-      firstname: formData.get("firstname")!.toString(),
-      name: formData.get("name")!.toString(),
+      firstname: formData.get("firstname") as string,
+      name: formData.get("name") as string,
     });
   } catch (e) {
     console.error(e);
@@ -257,11 +258,11 @@ async function submitUpdate(event: SubmitEvent) {
           <h3 class="mt-8 text-lg font-bold">Trainingsfortschritt</h3>
           <Tabs.Root value={sportCharts[0].sport.name}>
             <Tabs.List>
-              {#each sportCharts as sc}
+              {#each sportCharts as sc (sc.sport.id)}
                 <Tabs.Trigger value={sc.sport.name}>{sc.sport.name}</Tabs.Trigger>
               {/each}
             </Tabs.List>
-            {#each sportCharts as sc}
+            {#each sportCharts as sc (sc.sport.id)}
               <Tabs.Content value={sc.sport.name}>
                 <div class="h-80 w-full rounded border p-2">
                   <Chart data={sc.chartData} />

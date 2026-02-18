@@ -7,10 +7,10 @@ import {
   type RowSelectionState,
   type SortingState,
   type VisibilityState,
+  type Table as TanstackTable,
   getCoreRowModel,
   getFilteredRowModel,
   getSortedRowModel,
-  type Table as TanstackTable,
 } from "@tanstack/table-core";
 import { createRawSnippet } from "svelte";
 import * as Table from "$lib/components/ui/table/index.js";
@@ -80,6 +80,9 @@ async function loadData() {
     }
     data = training;
 
+    if (variant === "athlet" && athletes[parentId] === undefined) {
+      athletes[parentId] = await athleteService.getAthleteById(parentId);
+    }
     for (const t of data) {
       if (athletes[t.athleteId] === undefined) {
         athletes[t.athleteId] = await athleteService.getAthleteById(
@@ -104,7 +107,7 @@ async function loadData() {
   }
 }
 
-async function refreshData() {
+function refreshData() {
   promise = loadData();
 }
 
@@ -130,11 +133,11 @@ async function submitAdd(event: SubmitEvent) {
   try {
     await trainingService.createTrainingForAthlete({
       athleteId: parentId,
-      sportId: parseInt(data.get("sportId")!.toString()),
+      sportId: parseInt(data.get("sportId") as string),
       date: data.get("date")
-        ? new Date(data.get("date")!.toString()).toISOString()
+        ? new Date(data.get("date") as string).toISOString()
         : "",
-      metric: parseFloat(data.get("metric")!.toString()),
+      metric: parseFloat(data.get("metric") as string),
     });
   } catch (e) {
     console.error(e);
@@ -179,7 +182,6 @@ async function handleDelete() {
 }
 
 const parentCol: ColumnDef<Training> =
-  // svelte-ignore state_referenced_locally
   variant === "sport"
     ? {
         id: "athlete",
@@ -325,7 +327,6 @@ const columns: ColumnDef<Training>[] = [
 
 // let pagination = $state<PaginationState>({ pageIndex: 0, pageSize: 10 });
 let sorting = $state<SortingState>([
-  // svelte-ignore state_referenced_locally
   variant === "sport"
     ? { id: "athlete", desc: false }
     : { id: "sport", desc: false },
@@ -335,6 +336,7 @@ let columnFilters = $state<ColumnFiltersState>([]);
 let rowSelection = $state<RowSelectionState>({});
 let columnVisibility = $state<VisibilityState>({});
 
+// eslint-disable-next-line svelte/prefer-writable-derived -- createSvelteTable needs $effect context for reactivity
 let table: TanstackTable<Training> | undefined = $state();
 $effect(() => {
   table = createSvelteTable({
@@ -343,9 +345,6 @@ $effect(() => {
     },
     columns,
     state: {
-      // get pagination() {
-      //   return pagination;
-      // },
       get sorting() {
         return sorting;
       },
@@ -360,16 +359,8 @@ $effect(() => {
       },
     },
     getCoreRowModel: getCoreRowModel(),
-    // getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
-    // onPaginationChange: (updater) => {
-    //   if (typeof updater === "function") {
-    //     pagination = updater(pagination);
-    //   } else {
-    //     pagination = updater;
-    //   }
-    // },
     onSortingChange: (updater) => {
       if (typeof updater === "function") {
         sorting = updater(sorting);

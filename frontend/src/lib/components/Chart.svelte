@@ -1,5 +1,6 @@
 <script lang="ts">
   import { onMount, onDestroy } from "svelte";
+  import { SvelteMap } from "svelte/reactivity";
   import {
     Chart,
     CategoryScale,
@@ -92,7 +93,7 @@
   }
 
   function plainData(): ChartData {
-    return JSON.parse(JSON.stringify(data));
+    return JSON.parse(JSON.stringify(data)) as ChartData;
   }
 
   onMount(() => {
@@ -105,7 +106,7 @@
 
   $effect(() => {
     if (chart) {
-      const hiddenState = new Map<number, boolean>();
+      const hiddenState = new SvelteMap<number, boolean>();
       chart.data.datasets.forEach((ds, i) => {
         hiddenState.set(i, chart!.isDatasetVisible(i) === false);
       });

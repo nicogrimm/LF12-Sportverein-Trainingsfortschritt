@@ -27,11 +27,7 @@ async function loadPage(location: Location) {
   return Page.default;
 }
 
-$inspect($location).with(console.log);
-let Page: Promise<Component> = $state(new Promise(() => {}));
-$effect(() => {
-  Page = loadPage($location);
-});
+let Page: Promise<Component> = $derived(loadPage($location));
 </script>
 
 <Nav />

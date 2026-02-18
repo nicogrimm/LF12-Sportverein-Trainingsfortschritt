@@ -9,35 +9,35 @@ export type Sport = {
 
 class SportService {
   async getSports(): Promise<Sport[]> {
-    return await fetchWithErrorHandling(`${baseUrl}/api/sports`).then((resp) =>
+    return (await fetchWithErrorHandling(`${baseUrl}/api/sports`).then((resp) =>
       resp.json(),
-    );
+    )) as Sport[];
   }
 
   async getSportById(id: number): Promise<Sport> {
-    return await fetchWithErrorHandling(`${baseUrl}/api/sports/${id}`).then(
+    return (await fetchWithErrorHandling(`${baseUrl}/api/sports/${id}`).then(
       (resp) => resp.json(),
-    );
+    )) as Sport;
   }
 
   async createSport(sport: Omit<Sport, "id">): Promise<Sport> {
-    return await fetchWithErrorHandling(`${baseUrl}/api/sports`, {
+    return (await fetchWithErrorHandling(`${baseUrl}/api/sports`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify(sport),
-    }).then((resp) => resp.json());
+    }).then((resp) => resp.json())) as Sport;
   }
 
   async updateSport(sport: Sport): Promise<Sport> {
-    return await fetchWithErrorHandling(`${baseUrl}/api/sports/${sport.id}`, {
+    return (await fetchWithErrorHandling(`${baseUrl}/api/sports/${sport.id}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify(sport),
-    }).then((resp) => resp.json());
+    }).then((resp) => resp.json())) as Sport;
   }
 
   async deleteSport(id: number): Promise<void> {

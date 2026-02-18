@@ -53,7 +53,7 @@ async function loadData() {
   }
 }
 
-async function refreshData() {
+function refreshData() {
   promise = loadData();
 }
 
@@ -85,8 +85,8 @@ async function submitUpdate(event: SubmitEvent) {
     await trainingService.updateTrainingForAthlete(data!.athleteId, data!.id, {
       athleteId: data!.athleteId,
       sportId: data!.sportId,
-      date: new Date(formData.get("date")!.toString()).toISOString(),
-      metric: parseFloat(formData.get("metric")!.toString()),
+      date: new Date(formData.get("date") as string).toISOString(),
+      metric: parseFloat(formData.get("metric") as string),
     });
   } catch (e) {
     console.error(e);

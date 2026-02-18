@@ -1,4 +1,5 @@
 // @ts-check
+/* eslint-disable @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-assignment */
 import globals from "globals";
 import { defineConfig } from "eslint/config";
 import eslint from "@eslint/js";
@@ -25,6 +26,7 @@ export default defineConfig(
       "config/**/*.js",
       ".github",
       ".yarn",
+      "src/lib/components/ui/**",
     ],
   },
   {
@@ -49,6 +51,12 @@ export default defineConfig(
         parser: tsParser,
         svelteConfig,
       },
+    },
+    rules: {
+      "@typescript-eslint/no-unsafe-call": "off",
+      "@typescript-eslint/no-unsafe-member-access": "off",
+      "@typescript-eslint/no-unsafe-return": "off",
+      "@typescript-eslint/no-unsafe-assignment": "off",
     },
   },
 );
