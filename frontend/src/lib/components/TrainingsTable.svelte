@@ -57,15 +57,16 @@ let athletes: Record<number, Athlete> = {};
 let sports: Record<number, Sport> = {};
 let promise = $state(loadData());
 
-let sportSelected: string = $state("");
-let sportSelectTriggerContent = $derived.by(() => {
-  const i = parseInt(sportSelected);
+let sportSelectedString: string = $state("");
+let sportSelected = $derived.by(() => {
+  const i = parseInt(sportSelectedString);
   if (isNaN(i)) {
-    return "Sportart auswählen";
+    return null;
   } else {
-    return sports[parseInt(sportSelected)]?.name ?? "Sportart auswählen";
+    return sports[parseInt(sportSelectedString)] ?? null;
   }
-});
+})
+let sportSelectTriggerContent = $derived(sportSelected?.name ?? "Sportart auswählen");
 
 async function loadData() {
   try {
@@ -445,7 +446,7 @@ $effect(() => {
                     <Select.Root
                       type="single"
                       name="sportId"
-                      bind:value={sportSelected}
+                      bind:value={sportSelectedString}
                       required
                     >
                       <Select.Trigger
@@ -471,7 +472,11 @@ $effect(() => {
                     />
                   </div>
                   <div class="grid gap-3">
-                    <Label for="metric-1">Metrik</Label>
+                    {#if sportSelected}
+                      <Label for="metric-1">Metrik ({sportSelected?.unit})</Label>
+                    {:else}
+                      <Label for="metric-1">Metrik</Label>
+                    {/if}
                     <Input
                       id="metric-1"
                       name="metric"
